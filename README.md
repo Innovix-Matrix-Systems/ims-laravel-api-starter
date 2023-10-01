@@ -119,10 +119,53 @@ Verifying the health of your application is an essential step to ensure that all
 
 Remember to perform this health check regularly, especially after making significant changes to your application or its environment.
 
+## Running Test
+To execute tests for your application, utilize the following command:
+```bash
+./vendor/bin/pest
+```
+
+Running tests is crucial to ensure the reliability and correctness of your application's functionality. The above command will initiate the testing process and provide you with valuable insights into the quality of your codebase.
+
+## Extra Artisan Commands
+This project provides additional Artisan commands to simplify your workflow and enhance productivity.
+
+### Run PHP CS Fixer
+```bash
+php artisan csfixer:run
+```
+This command ensures that your code adheres to the predefined coding standards, making your codebase clean and readable.
+### Create a Service
+Creating services for your application is made effortless. Use the following command to generate a service:
+```bash
+php artisan make:service subfolder/ServiceName
+```
+Replace subfolder and ServiceName with the actual values you need. You can also create a service without a subfolder:
+
+```bash
+php artisan make:service TestService
+```
+The newly created service will be located at `app/Http/Services/TestService.php`, ready to handle your application's business logic.
+
+### Generate a Trait
+Traits are reusable code components that enhance code organization. To create a new trait, simply run:
+
+```bash
+php artisan make:trait TestTrait
+```
+
+This command generates a new trait file for your project, promoting code reusability and maintainability.
+
+Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
+
 ## Authors
 
 -   [@AHS12](https://www.github.com/AHS12)
 
 ## License
+## License
 
-Its a starter project of Innovix Matrix System
+This project is brought to you by Innovix Matrix System and is released as open-source software under the [MIT license](https://opensource.org/licenses/MIT).
+
+Feel free to use, modify, and distribute this starter project in accordance with the MIT license terms. We encourage collaboration and welcome contributions from the community to make this project even better.
+
