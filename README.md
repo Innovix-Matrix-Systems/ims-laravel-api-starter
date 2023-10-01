@@ -163,7 +163,6 @@ Leverage these Artisan commands to streamline your development process and maint
 -   [@AHS12](https://www.github.com/AHS12)
 
 ## License
-## License
 
 This project is brought to you by Innovix Matrix System and is released as open-source software under the [MIT license](https://opensource.org/licenses/MIT).
 
