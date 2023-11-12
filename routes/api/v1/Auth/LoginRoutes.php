@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 
 Route::prefix('v1')->group(function () {
     //login
-    Route::post('login/fallback', [AuthController::class, 'fallbackLogin']);
+    Route::post('login', [AuthController::class, 'login']);
 });
 
 Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {

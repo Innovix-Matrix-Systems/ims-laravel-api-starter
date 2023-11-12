@@ -35,12 +35,12 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
 
-        $user = User::where('phone', $request->phone)
+        $user = User::where('email', $request->email)
             ->with('roles.permissions')
             ->first();
         $authData = $this->authService->login(
             $user,
-            $request->pin,
+            $request->password,
             $request->device,
             true,
         );

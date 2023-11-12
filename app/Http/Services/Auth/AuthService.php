@@ -213,7 +213,7 @@ class AuthService
                 break;
             case self::AUTH_ERROR_INCORRECT_PASSWORD:
                 $errorCode = self::AUTH_ERROR_INCORRECT_PASSWORD;
-                $errorMessage = __('messages.login.invalid.pin');
+                $errorMessage = __('messages.login.invalid.password');
                 break;
             default:
                 break;

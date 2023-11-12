@@ -52,18 +52,23 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "formdata",
 									"formdata": [
 										{
-											"key": "phone",
-											"value": "1221122211",
+											"key": "email",
+											"value": "superadmin@ims.com",
 											"type": "text"
 										},
 										{
-											"key": "pin",
+											"key": "password",
 											"value": "123456",
 											"type": "text"
 										},
@@ -148,6 +153,11 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -202,6 +212,11 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -236,6 +251,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
 										"type": "text"
 									}
 								],
@@ -278,6 +298,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
 										"type": "text"
 									}
 								],
@@ -322,6 +347,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
 										"type": "text"
 									}
 								],
@@ -374,6 +404,11 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -415,6 +450,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
 										"type": "text"
 									}
 								],
@@ -467,6 +507,11 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -501,6 +546,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
 										"type": "text"
 									}
 								],
@@ -546,6 +596,11 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -574,6 +629,37 @@
 				}
 			],
 			"description": "## Introduction\n\nProvides endpoints of Role and Permission Management"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://ims-laravel-api-starter.test"
+		},
+		{
+			"key": "auth_token",
+			"value": "2|jz39g2hjVW25IvoNUjr1vPYNQX4oYVbAR8j0Y5yia4daef1e",
+			"type": "string"
 		}
 	]
 }
