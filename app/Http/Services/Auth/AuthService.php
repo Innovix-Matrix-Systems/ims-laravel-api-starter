@@ -1,0 +1,282 @@
+<?php
+
+namespace App\Http\Services\Auth;
+
+use App\Exceptions\Auth\LoginErrorException;
+use App\Http\Services\Misc\OtpService;
+use App\Http\Traits\UserTrait;
+use App\Models\User;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+use function Laravel\Prompts\error;
+
+class AuthService
+{
+    use AuthenticatesUsers, UserTrait;
+
+    const AUTH_ERROR_GENERAL = 999;
+    const AUTH_ERROR_UNVERIFIED = 1000;
+    const AUTH_ERROR_DEACTIVE = 1001;
+    const AUTH_ERROR_INCORRECT_PASSWORD = 1002;
+    const AUTH_ERROR_OTP_EXPIRED = 1003;
+    const AUTH_ERROR_INCORRECT_OTP = 1004;
+    const AUTH_ERROR_LOCKOUT = 1005;
+    const AUTH_SUCCESS_CODE = 10;
+    const AUTH_OTP_SUCCESS_CODE = 11;
+
+    /**
+     * @var OtpService
+     */
+    protected $otpService;
+
+    /**
+      * __construct
+      *
+       * @return void
+      */
+    public function __construct(OtpService $otpService)
+    {
+        $this->otpService = $otpService;
+    }
+
+    /**
+     * Verify the user before Attempting to log the user into the application.
+     *
+     * @param  \App\Models\User $user
+     * @return string           error code
+     */
+    protected function verifyBeforeLogin(User $user)
+    {
+        if ($user->is_active == $this->USER_DEACTIVE) {
+            return self::AUTH_ERROR_DEACTIVE;
+        }
+        if (! $user->phone_verified_at) {
+            return self::AUTH_ERROR_UNVERIFIED;
+        }
+
+        return self::AUTH_SUCCESS_CODE;
+    }
+
+
+    /**
+     * check if the provided password is matched with the user current password
+     *
+     * @param  \App\Models\User $user
+     * @param  string           $password
+     * @return boolean
+     */
+    public function isUserPasswordMatched(User $user, $password)
+    {
+        if (Hash::check($password, $user->password)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * The user has been authenticated.
+     *
+     * @param  \App\Models\User $user
+     * @param  string           $device
+     * @return void
+     */
+    protected function authenticated(User $user, $device)
+    {
+        $user->last_login_at = now();
+        $user->last_active_device = $device;
+        $user->save();
+    }
+
+    /**
+     * Send Otp code to the autheticated user
+     *
+     * @param  \App\Models\User $user
+     * @param  boolean          $isFirstLogin
+     * @param  string           $password
+     * @return void
+     */
+    public function sendOtpToUser(User $user, $isFirstLogin, $password='')
+    {
+        if ($isFirstLogin && ! $this->isUserPasswordMatched($user, $password)) {
+            $this->incrementLoginAttempts(request());
+            // Send invalid password error
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
+            //return;
+        }
+        $this->otpService->sendOtp($user);
+    }
+
+    /**
+     * verify if the otp is expird or correct
+     *
+     * @param  \App\Models\User $user
+     * @param  string           $otp
+     * @return void
+     */
+    public function verifyOtp(User $user, $otp)
+    {
+
+        if($this->otpService->isOtpExpired($user)) {
+            //send otp exipred response
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_OTP_EXPIRED);
+
+        }
+
+        if(! $this->otpService->isCorrectOtp($user, $otp)) {
+            $this->incrementLoginAttempts(request());
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_OTP);
+        }
+
+    }
+
+    /**
+     * Log the user into the application
+     *
+     * @param  \App\Models\User $user
+     * @param  string           $password
+     * @param  string           $device
+     * @param  boolean          $isFallback
+     * @return array
+     * @throws \App\Exceptions\Auth\LoginErrorException;
+     */
+    public function login(User $user, $password, $device="", $isFallback = false)
+    {
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if (
+            method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts(request())
+        ) {
+            $this->fireLockoutEvent(request());
+
+            return $this->sendLockoutResponse();
+        }
+
+        $authCode = $this->verifyBeforeLogin($user, $password);
+
+        if($authCode == self::AUTH_ERROR_DEACTIVE) {
+            //send Deactivate Error Response
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_DEACTIVE);
+        }
+
+        if($authCode == self::AUTH_ERROR_UNVERIFIED) {
+            //send  unverified Error Response
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_UNVERIFIED);
+        }
+
+        if($isFallback && ! $this->isUserPasswordMatched($user, $password)) {
+            //send failed login response
+            $this->incrementLoginAttempts(request());
+            return $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
+        }
+
+        if(! $isFallback) {
+            $this->verifyOtp($user, $password);
+        }
+
+        if($authCode == self::AUTH_SUCCESS_CODE) {
+            $token = $user->createToken($this->generateTokenKey($user->id, $device) . $user->id)->plainTextToken;
+            $this->clearLoginAttempts(request());
+            $this->authenticated($user, $device);
+
+            return [
+                //'user'      => $user->load('roles'),
+                'user'      => $user,
+                'token'     => $token,
+            ];
+
+        }
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts(request());
+        return $this->sendFailedLoginResponse(self::AUTH_ERROR_GENERAL);
+
+    }
+
+    public function logout(string $device)
+    {
+        $user = Auth::user();
+        $deviceTokenKey = $this->generateTokenKey($user->id, $device).$user->id;
+        $user->tokens()
+        ->where('tokenable_id', $user->id)
+        ->where('tokenable_type', User::class)
+        ->where('name', $deviceTokenKey)
+        ->delete();
+    }
+
+
+    /**
+     * generate auth token key for a user
+     *
+     * @param  string $userId
+     * @param  string $device
+     * @return string
+     */
+    private function generateTokenKey($userId, $device)
+    {
+        return $this->USER_TOKEN_PREFIX.$userId.'_'.$device;
+    }
+
+    /**
+     * send lockout response to the user
+     *
+     * @throws \App\Exceptions\Auth\LoginErrorException;
+     */
+    private function sendLockoutResponse()
+    {
+        throw new LoginErrorException(
+            Response::HTTP_BAD_REQUEST,
+            self::AUTH_ERROR_LOCKOUT,
+            __('messages.login.lockout')
+        );
+    }
+
+    /**
+     * send Failed login response
+     * @param int $authErrorCode
+     * @throws \App\Exceptions\Auth\LoginErrorException;
+     */
+    private function sendFailedLoginResponse(int $authErrorCode)
+    {
+        $errorCode = self::AUTH_ERROR_GENERAL;
+        $errorMessage = __('messages.login.general');
+        $responseCode = Response::HTTP_BAD_REQUEST;
+        switch ($authErrorCode) {
+            case self::AUTH_ERROR_DEACTIVE:
+                $errorCode = self::AUTH_ERROR_DEACTIVE;
+                $errorMessage = __('messages.login.deactive');
+                break;
+            case self::AUTH_ERROR_UNVERIFIED:
+                $errorCode = self::AUTH_ERROR_UNVERIFIED;
+                $errorMessage = __('messages.login.unverified');
+                break;
+            case self::AUTH_ERROR_OTP_EXPIRED:
+                $errorCode = self::AUTH_ERROR_OTP_EXPIRED;
+                $errorMessage = __('messages.login.expired.otp');
+                break;
+            case self::AUTH_ERROR_INCORRECT_OTP:
+                $errorCode = self::AUTH_ERROR_INCORRECT_OTP;
+                $errorMessage = __('messages.login.invalid.otp');
+                break;
+            case self::AUTH_ERROR_INCORRECT_PASSWORD:
+                $errorCode = self::AUTH_ERROR_INCORRECT_PASSWORD;
+                $errorMessage = __('messages.login.invalid.pin');
+                break;
+            default:
+                # code...
+                break;
+        }
+        throw new LoginErrorException(
+            $responseCode,
+            $errorCode,
+            $errorMessage,
+        );
+    }
+}

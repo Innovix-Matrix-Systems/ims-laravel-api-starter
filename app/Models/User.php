@@ -3,14 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Http\Traits\UserTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, UserTrait;
+
+    protected $guard_name = 'sanctum';
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +23,19 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'first_name',
+        'last_name',
+        'user_name',
         'name',
         'email',
         'password',
+        'phone',
+        'company_name',
+        'company_address',
+        'last_otp',
+        'last_active_device',
+        'is_active',
+        'last_login_at',
     ];
 
     /**
@@ -31,6 +46,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'last_otp',
     ];
 
     /**
@@ -40,6 +56,18 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->id == 1 && $this->hasRole($this->SUPER_ADMIN);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole($this->ADMIN);
+    }
 }

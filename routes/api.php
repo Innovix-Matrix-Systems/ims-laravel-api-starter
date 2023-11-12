@@ -17,13 +17,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 //App Health Route
-
 Route::get('/healthz', [HealthController::class, 'healthz']);
 Route::get('/http-test', function (Request $request) {
     return response()->json([
         "success" => true,
     ], Response::HTTP_OK);
 })->name('http.test');
+
+// auth routes
+include "api/v1/Auth/LoginRoutes.php";
+include "api/v1/RolePermission/RolePermissionRoutes.php";
+
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
