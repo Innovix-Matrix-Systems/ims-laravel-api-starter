@@ -34,7 +34,11 @@ class RoleController extends Controller
         $this->authorize('viewAny', Role::class);
 
         $roles = Role::with('permissions')->get();
-        return RoleResource::collection($roles);
+        return $this->sendSuccessCollectionResponse(
+            RoleResource::collection($roles),
+            __('http-statuses.200'),
+            Response::HTTP_OK
+        );
     }
 
     /**
@@ -55,7 +59,11 @@ class RoleController extends Controller
             $request->name,
             $request->permissions ?? []
         );
-        return RoleResource::make($role);
+        return $this->sendSuccessResponse(
+            RoleResource::make($role),
+            __('http-statuses.201'),
+            Response::HTTP_CREATED
+        );
     }
 
     /**
@@ -66,7 +74,11 @@ class RoleController extends Controller
 
         $role = Role::findOrFail($id);
         $this->authorize('view', $role);
-        return RoleResource::make($role);
+        return $this->sendSuccessResponse(
+            RoleResource::make($role),
+            __('http-statuses.200'),
+            Response::HTTP_OK
+        );
     }
 
     /**
@@ -86,7 +98,11 @@ class RoleController extends Controller
         $this->authorize('update', $role);
         $name = $request->name;
         $updatedRole = $this->rolePermissionService->updateRole($role, $name);
-        return RoleResource::make($updatedRole);
+        return $this->sendSuccessResponse(
+            RoleResource::make($updatedRole),
+            __('http-statuses.200'),
+            Response::HTTP_OK
+        );
     }
 
     /**
@@ -105,6 +121,10 @@ class RoleController extends Controller
         $this->authorize('create', Role::class);
         $role = Role::findOrFail($request->id);
         $role->syncPermissions($request->permissions);
-        return RoleResource::make($role->load('permissions'));
+        return $this->sendSuccessResponse(
+            RoleResource::make($role->load('permissions')),
+            __('http-statuses.200'),
+            Response::HTTP_OK
+        );
     }
 }

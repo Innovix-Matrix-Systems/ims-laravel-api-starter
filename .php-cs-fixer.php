@@ -5,6 +5,7 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude(['bootstrap', 'storage', 'vendor', 'docker'])
     ->name('*.php')
     ->name('_ide_helper')
+    ->name('_ide_helper_models')
     ->notName('*.blade.php')
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
@@ -14,7 +15,7 @@ return (new PhpCsFixer\Config())
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
-        'not_operator_with_successor_space' => true,
+        'unary_operator_spaces' => true,
         'ordered_imports' => true,
         'phpdoc_align' => true,
         // Add more rules as needed

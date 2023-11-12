@@ -55,7 +55,7 @@ class OtpService
     public function isOtpExpired(User $user)
     {
         $cachedCode = Cache::get(self::USER_OTP_PREFIX . $user->id);
-        if (! $cachedCode) {
+        if (!$cachedCode) {
             return true;
         }
         return false;
@@ -87,7 +87,7 @@ class OtpService
     {
         $phone = $user->phone;
         $otp = $this->generateOtpCode($user, 5);
-        $body = "{$otp} is your Dokani OTP";
+        $body = "{$otp} is your OTP";
         $this->smsService->sendSms($phone, $body);
     }
 

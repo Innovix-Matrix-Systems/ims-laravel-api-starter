@@ -54,7 +54,7 @@ class AuthService
         if ($user->is_active == $this->USER_DEACTIVE) {
             return self::AUTH_ERROR_DEACTIVE;
         }
-        if (! $user->phone_verified_at) {
+        if (!$user->phone_verified_at) {
             return self::AUTH_ERROR_UNVERIFIED;
         }
 
@@ -93,48 +93,6 @@ class AuthService
     }
 
     /**
-     * Send Otp code to the autheticated user
-     *
-     * @param  \App\Models\User $user
-     * @param  boolean          $isFirstLogin
-     * @param  string           $password
-     * @return void
-     */
-    public function sendOtpToUser(User $user, $isFirstLogin, $password='')
-    {
-        if ($isFirstLogin && ! $this->isUserPasswordMatched($user, $password)) {
-            $this->incrementLoginAttempts(request());
-            // Send invalid password error
-            $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
-            //return;
-        }
-        $this->otpService->sendOtp($user);
-    }
-
-    /**
-     * verify if the otp is expird or correct
-     *
-     * @param  \App\Models\User $user
-     * @param  string           $otp
-     * @return void
-     */
-    public function verifyOtp(User $user, $otp)
-    {
-
-        if($this->otpService->isOtpExpired($user)) {
-            //send otp exipred response
-            $this->sendFailedLoginResponse(self::AUTH_ERROR_OTP_EXPIRED);
-
-        }
-
-        if(! $this->otpService->isCorrectOtp($user, $otp)) {
-            $this->incrementLoginAttempts(request());
-            $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_OTP);
-        }
-
-    }
-
-    /**
      * Log the user into the application
      *
      * @param  \App\Models\User $user
@@ -170,14 +128,10 @@ class AuthService
             $this->sendFailedLoginResponse(self::AUTH_ERROR_UNVERIFIED);
         }
 
-        if($isFallback && ! $this->isUserPasswordMatched($user, $password)) {
+        if(!$this->isUserPasswordMatched($user, $password)) {
             //send failed login response
             $this->incrementLoginAttempts(request());
             return $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
-        }
-
-        if(! $isFallback) {
-            $this->verifyOtp($user, $password);
         }
 
         if($authCode == self::AUTH_SUCCESS_CODE) {
@@ -257,20 +211,11 @@ class AuthService
                 $errorCode = self::AUTH_ERROR_UNVERIFIED;
                 $errorMessage = __('messages.login.unverified');
                 break;
-            case self::AUTH_ERROR_OTP_EXPIRED:
-                $errorCode = self::AUTH_ERROR_OTP_EXPIRED;
-                $errorMessage = __('messages.login.expired.otp');
-                break;
-            case self::AUTH_ERROR_INCORRECT_OTP:
-                $errorCode = self::AUTH_ERROR_INCORRECT_OTP;
-                $errorMessage = __('messages.login.invalid.otp');
-                break;
             case self::AUTH_ERROR_INCORRECT_PASSWORD:
                 $errorCode = self::AUTH_ERROR_INCORRECT_PASSWORD;
                 $errorMessage = __('messages.login.invalid.pin');
                 break;
             default:
-                # code...
                 break;
         }
         throw new LoginErrorException(

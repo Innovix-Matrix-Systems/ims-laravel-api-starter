@@ -142,7 +142,7 @@ class AppHealthService
 
     private function getCompletedMigrations()
     {
-        if (! $this->getMigrator()->repositoryExists()) {
+        if (!$this->getMigrator()->repositoryExists()) {
             return [];
         }
 

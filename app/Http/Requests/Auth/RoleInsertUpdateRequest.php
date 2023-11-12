@@ -27,7 +27,7 @@ class RoleInsertUpdateRequest extends FormRequest
             'permissions' => 'nullable|array|min:1',
             'permissions.*' => 'nullable|exists:permissions,id',
         ];
-        if (! $this->id) {
+        if (!$this->id) {
             array_shift($validations);
         }
 

@@ -188,7 +188,7 @@ class MakeServiceCommand extends Command
     {
         $dir = dirname($path);
 
-        if (! file_exists($dir)) {
+        if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
     }

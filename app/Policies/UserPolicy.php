@@ -35,7 +35,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if($model->isSuperAdmin() && ! $user->isSuperAdmin()) {
+        if($model->isSuperAdmin() && !$user->isSuperAdmin()) {
             return false;
         }
         if($user->hasPermissionTo('user.update')) {

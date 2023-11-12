@@ -69,7 +69,7 @@ class Controller extends BaseController
             'success' => false,
             'message' => $error,
         ];
-        if (! empty($errorMessages)) {
+        if (!empty($errorMessages)) {
             $response['errors'] = $errorMessages;
         }
         if (empty($error)) {

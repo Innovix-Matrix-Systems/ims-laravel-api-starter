@@ -30,7 +30,11 @@ class PermissionController extends Controller
     {
         $this->authorize('viewAny', Permission::class);
         $permissions = Permission::all();
-        return PermissionResource::collection($permissions);
+        return $this->sendSuccessCollectionResponse(
+            PermissionResource::collection($permissions),
+            __('http-statuses.200'),
+            Response::HTTP_OK
+        );
     }
 
     /**
@@ -50,7 +54,11 @@ class PermissionController extends Controller
         $permission = new Permission();
         $permission->name = $request->name;
         $permission->save();
-        return PermissionResource::make($permission);
+        return $this->sendSuccessResponse(
+            PermissionResource::make($permission),
+            __('http-statuses.201'),
+            Response::HTTP_CREATED
+        );
     }
 
     /**

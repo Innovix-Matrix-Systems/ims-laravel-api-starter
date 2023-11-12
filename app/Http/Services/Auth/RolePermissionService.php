@@ -41,7 +41,7 @@ class RolePermissionService
         try {
             $role->save();
 
-            if (! empty($permissions)) {
+            if (!empty($permissions)) {
                 app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
                 $role->givePermissionTo($permissions);
             }

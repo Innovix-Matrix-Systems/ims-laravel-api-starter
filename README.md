@@ -8,6 +8,15 @@ With `ims-laravel-api-starter`, you can jumpstart your Laravel-based API develop
 
 Explore this project and experience the convenience of a ready-made local development environment for your Laravel-based APIs.
 
+## Features
+
+- **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/10.x/sanctum).
+
+- **Role & Permission-Based Authorization**: Utilize [Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) for a flexible authorization system based on roles and permissions.
+
+- **Multiple Language Support**: Provide a multilingual experience with [Laravel Lang](https://laravel-lang.com/) to make your application accessible to a diverse user base.
+
+
 ## Required Commands to run locally
 
 1.**Create Your Project from the Template:**

@@ -15,15 +15,15 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
-     */
+      * Get the validation rules that apply to the request.
+      *
+       * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+      */
     public function rules(): array
     {
         return [
             'phone'      => 'required|max:11|exists:users,phone',
-            'otp'        => 'required|string|size:6',
+            'pin'        => 'required|string|size:6',
             'device'     => 'required|string|max:100',
         ];
     }
@@ -37,7 +37,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone.exists' => __('messages.phone.exists'),
-            'otp.size'     => __('messages.otp.size'),
+            'pin.required' => __('messages.pin.required'),
+            'pin.size'     => __('messages.pin.size'),
         ];
     }
 }
