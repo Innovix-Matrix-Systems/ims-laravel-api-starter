@@ -34,7 +34,6 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-
         $user = User::where('email', $request->email)
             ->with('roles.permissions')
             ->first();
@@ -42,7 +41,6 @@ class AuthController extends Controller
             $user,
             $request->password,
             $request->device,
-            true,
         );
         $data = [
             'user' => UserResource::make($authData['user']),

@@ -55,7 +55,7 @@ class AuthService
         if ($user->is_active == UserStatus::DEACTIVE) {
             return self::AUTH_ERROR_DEACTIVE;
         }
-        if (!$user->phone_verified_at) {
+        if (!$user->email_verified_at) {
             return self::AUTH_ERROR_UNVERIFIED;
         }
 
@@ -167,11 +167,10 @@ class AuthService
      * @param  \App\Models\User $user
      * @param  string           $password
      * @param  string           $device
-     * @param  boolean          $isFallback
      * @return array
      * @throws \App\Exceptions\Auth\LoginErrorException;
      */
-    public function login(User $user, $password, $device = "", $isFallback = false)
+    public function login(User $user, $password, $device = "")
     {
         if ($this->hasTooManyLoginAttempts(request())) {
             $this->fireLockoutEvent(request());

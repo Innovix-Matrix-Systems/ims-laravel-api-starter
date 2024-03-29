@@ -10,7 +10,7 @@ Explore this project and experience the convenience of a ready-made local develo
 
 ## Features
 
-- **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/10.x/sanctum).
+- **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/11.x/sanctum).
 
 - **Role & Permission-Based Authorization**: Utilize [Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) for a flexible authorization system based on roles and permissions.
 
@@ -134,6 +134,10 @@ To execute tests for your application, utilize the following command:
 ./vendor/bin/pest
 ```
 
+```bash
+php artisan test
+```
+
 Running tests is crucial to ensure the reliability and correctness of your application's functionality. The above command will initiate the testing process and provide you with valuable insights into the quality of your codebase.
 
 ## Extra Artisan Commands
@@ -155,15 +159,6 @@ Replace subfolder and ServiceName with the actual values you need. You can also 
 php artisan make:service TestService
 ```
 The newly created service will be located at `app/Http/Services/TestService.php`, ready to handle your application's business logic.
-
-### Generate a Trait
-Traits are reusable code components that enhance code organization. To create a new trait, simply run:
-
-```bash
-php artisan make:trait TestTrait
-```
-
-This command generates a new trait file for your project, promoting code reusability and maintainability.
 
 Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
 
