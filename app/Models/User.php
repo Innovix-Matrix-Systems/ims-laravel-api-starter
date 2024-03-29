@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Http\Traits\UserTrait;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, UserTrait;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $guard_name = 'sanctum';
 
@@ -63,11 +63,11 @@ class User extends Authenticatable
 
     public function isSuperAdmin(): bool
     {
-        return $this->id == 1 && $this->hasRole($this->SUPER_ADMIN);
+        return $this->id == 1 && $this->hasRole(UserRole::SUPER_ADMIN);
     }
 
     public function isAdmin(): bool
     {
-        return $this->hasRole($this->ADMIN);
+        return $this->hasRole(UserRole::ADMIN);
     }
 }

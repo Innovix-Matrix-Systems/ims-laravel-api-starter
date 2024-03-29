@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 
 class Controller extends BaseController
 {
@@ -15,9 +18,9 @@ class Controller extends BaseController
     /**
      * return  response.
      *
-     * @param array  $result
-     * @param string $message
-     * @param int    $code
+     * @param array | Collection | AnonymousResourceCollection | JsonResource $result
+     * @param string                                                          $message
+     * @param int                                                             $code
      *
      * @return JsonResponse
      */
@@ -37,9 +40,9 @@ class Controller extends BaseController
     /**
      * return  response with collection.
      *
-     * @param collection $collection
-     * @param string     $message
-     * @param int        $code
+     * @param Collection | AnonymousResourceCollection $collection
+     * @param string                                   $message
+     * @param int                                      $code
      *
      * @return JsonResponse
      */

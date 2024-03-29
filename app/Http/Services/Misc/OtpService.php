@@ -27,7 +27,7 @@ class OtpService
     /**
      * generate  phone verification code and store them in cache.
      *
-     * @param  App\Models\User
+     * @param  \App\Models\User
      * @param  number $time in minutes
      * @return string code
      */
@@ -49,7 +49,7 @@ class OtpService
     /**
      * check if the OTP is expired from cache or not
      *
-     * @param  App\Models\User
+     * @param  \App\Models\User
      * @return boolean
      */
     public function isOtpExpired(User $user)
@@ -64,7 +64,7 @@ class OtpService
     /**
      * check if the OTP is correct
      *
-     * @param  App\Models\User
+     * @param  \App\Models\User
      * @param  string  $code
      * @return boolean
      */
@@ -80,7 +80,7 @@ class OtpService
     /**
      * send Otp to a user
      *
-     * @param  App\Models\User
+     * @param  \App\Models\User
      * @return void
      */
     public function sendOtp(User $user)
