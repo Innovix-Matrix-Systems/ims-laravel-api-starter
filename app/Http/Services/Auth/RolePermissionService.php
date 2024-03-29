@@ -3,7 +3,6 @@
 namespace App\Http\Services\Auth;
 
 use App\Exceptions\BasicValidationErrorException;
-use App\Http\Traits\UserTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
@@ -11,7 +10,6 @@ use Spatie\Permission\Models\Role;
 
 class RolePermissionService
 {
-    use UserTrait;
 
     const UNALTERABLE_ROLE_IDS = [1, 2, 3];
     const UNALTERABLE_PERMISSION_IDS = [1,2,3,4,5,6,7,8,9,10];

@@ -27,8 +27,7 @@ class UserResource extends JsonResource
             'last_login_at' => $this->last_login_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'roles' => RoleResource::collection($this->roles),
-            'roleNames' => $this->getRoleNames(),
+            'roles' =>  $this->getRoleNames(),
             'permissions' => PermissionResource::collection($this->getAllPermissions()),
         ];
     }

@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Http\Traits\UserTrait;
+use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    use UserTrait;
     private $guard = "sanctum";
     /**
      * Run the database seeds.
@@ -21,20 +20,20 @@ class RoleSeeder extends Seeder
 
         $superAdmin = Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => $this->SUPER_ADMIN
+            'name' => UserRole::SUPER_ADMIN
         ]);
 
         $superAdmin->givePermissionTo(Permission::all());
 
         $admin =Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => $this->ADMIN
+            'name' => UserRole::ADMIN
         ]);
         $admin->givePermissionTo(['role.view.all','user.view.all','user.view','user.update']);
 
         Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => $this->USER
+            'name' => UserRole::USER
         ]);
     }
 }

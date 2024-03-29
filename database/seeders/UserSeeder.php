@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Http\Traits\UserTrait;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Models\User;
 use Faker\Generator;
 use Illuminate\Container\Container;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    use UserTrait;
 
     /**
      * The current Faker instance.
@@ -55,10 +55,10 @@ class UserSeeder extends Seeder
         $superAdmin->phone = $this->faker->phoneNumber();
         $superAdmin->phone_verified_at = now();
         $superAdmin->password = Hash::make(123456);
-        $superAdmin->is_active = $this->USER_ACTIVE;
+        $superAdmin->is_active = UserStatus::ACTIVE;
         $superAdmin->last_login_at = now();
         $superAdmin->save();
 
-        $superAdmin->assignRole($this->SUPER_ADMIN, $this->ADMIN);
+        $superAdmin->assignRole(UserRole::SUPER_ADMIN, UserRole::ADMIN);
     }
 }

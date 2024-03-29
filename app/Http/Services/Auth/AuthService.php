@@ -2,22 +2,23 @@
 
 namespace App\Http\Services\Auth;
 
+use App\Enums\UserStatus;
 use App\Exceptions\Auth\LoginErrorException;
 use App\Http\Services\Misc\OtpService;
-use App\Http\Traits\UserTrait;
 use App\Models\User;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
-use function Laravel\Prompts\error;
+use Illuminate\Support\Str;
 
 class AuthService
 {
-    use AuthenticatesUsers, UserTrait;
-
+    const USER_TOKEN_PREFIX = 'user_';
+    const MAX_LOGIN_ATTEMPTS = 5;
+    const MAX_DECAY_MINUTES = 1;
     const AUTH_ERROR_GENERAL = 999;
     const AUTH_ERROR_UNVERIFIED = 1000;
     const AUTH_ERROR_DEACTIVE = 1001;
@@ -34,10 +35,10 @@ class AuthService
     protected $otpService;
 
     /**
-      * __construct
-      *
-       * @return void
-      */
+     * __construct
+     *
+     * @return void
+     */
     public function __construct(OtpService $otpService)
     {
         $this->otpService = $otpService;
@@ -51,7 +52,7 @@ class AuthService
      */
     protected function verifyBeforeLogin(User $user)
     {
-        if ($user->is_active == $this->USER_DEACTIVE) {
+        if ($user->is_active == UserStatus::DEACTIVE) {
             return self::AUTH_ERROR_DEACTIVE;
         }
         if (!$user->phone_verified_at) {
@@ -60,7 +61,6 @@ class AuthService
 
         return self::AUTH_SUCCESS_CODE;
     }
-
 
     /**
      * check if the provided password is matched with the user current password
@@ -77,7 +77,6 @@ class AuthService
         return false;
     }
 
-
     /**
      * The user has been authenticated.
      *
@@ -93,6 +92,76 @@ class AuthService
     }
 
     /**
+     * Get the rate limiter instance.
+     *
+     * @return \Illuminate\Cache\RateLimiter
+     */
+    protected function limiter()
+    {
+        return app(RateLimiter::class);
+    }
+
+    /**
+     * Get the throttle key for the given request.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return string
+     */
+    protected function throttleKey(Request $request)
+    {
+        return Str::transliterate(Str::lower($request->input('email').'|'.$request->ip()));
+    }
+
+    /**
+     * Clear the login locks for the given user credentials.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return void
+     */
+    protected function clearLoginAttempts(Request $request)
+    {
+        $this->limiter()->clear($this->throttleKey($request));
+    }
+
+    /**
+     * Determine if the user has too many failed login attempts.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return bool
+     */
+    protected function hasTooManyLoginAttempts(Request $request)
+    {
+        return $this->limiter()->tooManyAttempts(
+            $this->throttleKey($request),
+            self::MAX_LOGIN_ATTEMPTS
+        );
+    }
+
+    /**
+     * Fire an event when a lockout occurs.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return void
+     */
+    protected function fireLockoutEvent(Request $request)
+    {
+        event(new Lockout($request));
+    }
+
+    /**
+     * Increment the login attempts for the user.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return void
+     */
+    protected function incrementLoginAttempts(Request $request)
+    {
+        $this->limiter()->hit(
+            $this->throttleKey($request),
+            self::MAX_DECAY_MINUTES * 60
+        );
+    }
+    /**
      * Log the user into the application
      *
      * @param  \App\Models\User $user
@@ -102,47 +171,39 @@ class AuthService
      * @return array
      * @throws \App\Exceptions\Auth\LoginErrorException;
      */
-    public function login(User $user, $password, $device="", $isFallback = false)
+    public function login(User $user, $password, $device = "", $isFallback = false)
     {
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
-        if (
-            method_exists($this, 'hasTooManyLoginAttempts') &&
-            $this->hasTooManyLoginAttempts(request())
-        ) {
+        if ($this->hasTooManyLoginAttempts(request())) {
             $this->fireLockoutEvent(request());
-
-            return $this->sendLockoutResponse();
+            $this->sendLockoutResponse();
         }
 
-        $authCode = $this->verifyBeforeLogin($user, $password);
+        $authCode = $this->verifyBeforeLogin($user);
 
-        if($authCode == self::AUTH_ERROR_DEACTIVE) {
+        if ($authCode == self::AUTH_ERROR_DEACTIVE) {
             //send Deactivate Error Response
             $this->sendFailedLoginResponse(self::AUTH_ERROR_DEACTIVE);
         }
 
-        if($authCode == self::AUTH_ERROR_UNVERIFIED) {
+        if ($authCode == self::AUTH_ERROR_UNVERIFIED) {
             //send  unverified Error Response
             $this->sendFailedLoginResponse(self::AUTH_ERROR_UNVERIFIED);
         }
 
-        if(!$this->isUserPasswordMatched($user, $password)) {
+        if (!$this->isUserPasswordMatched($user, $password)) {
             //send failed login response
             $this->incrementLoginAttempts(request());
-            return $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
+            $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
         }
 
-        if($authCode == self::AUTH_SUCCESS_CODE) {
+        if ($authCode == self::AUTH_SUCCESS_CODE) {
             $token = $user->createToken($this->generateTokenKey($user->id, $device) . $user->id)->plainTextToken;
             $this->clearLoginAttempts(request());
             $this->authenticated($user, $device);
 
             return [
-                //'user'      => $user->load('roles'),
-                'user'      => $user,
-                'token'     => $token,
+                'user'  => $user,
+                'token' => $token,
             ];
 
         }
@@ -150,21 +211,20 @@ class AuthService
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
         $this->incrementLoginAttempts(request());
-        return $this->sendFailedLoginResponse(self::AUTH_ERROR_GENERAL);
+        $this->sendFailedLoginResponse(self::AUTH_ERROR_GENERAL);
 
     }
 
     public function logout(string $device)
     {
         $user = Auth::user();
-        $deviceTokenKey = $this->generateTokenKey($user->id, $device).$user->id;
+        $deviceTokenKey = $this->generateTokenKey($user->id, $device) . $user->id;
         $user->tokens()
-        ->where('tokenable_id', $user->id)
-        ->where('tokenable_type', User::class)
-        ->where('name', $deviceTokenKey)
-        ->delete();
+            ->where('tokenable_id', $user->id)
+            ->where('tokenable_type', User::class)
+            ->where('name', $deviceTokenKey)
+            ->delete();
     }
-
 
     /**
      * generate auth token key for a user
@@ -175,7 +235,7 @@ class AuthService
      */
     private function generateTokenKey($userId, $device)
     {
-        return $this->USER_TOKEN_PREFIX.$userId.'_'.$device;
+        return self::USER_TOKEN_PREFIX . $userId . '_' . $device;
     }
 
     /**
@@ -183,7 +243,7 @@ class AuthService
      *
      * @throws \App\Exceptions\Auth\LoginErrorException;
      */
-    private function sendLockoutResponse()
+    protected function sendLockoutResponse()
     {
         throw new LoginErrorException(
             Response::HTTP_BAD_REQUEST,
@@ -197,7 +257,7 @@ class AuthService
      * @param int $authErrorCode
      * @throws \App\Exceptions\Auth\LoginErrorException;
      */
-    private function sendFailedLoginResponse(int $authErrorCode)
+    protected function sendFailedLoginResponse(int $authErrorCode)
     {
         $errorCode = self::AUTH_ERROR_GENERAL;
         $errorMessage = __('messages.login.general');
