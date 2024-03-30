@@ -9,19 +9,14 @@ use Illuminate\Http\Response;
 
 class HealthController extends Controller
 {
-
-    /**
-     * @var AppHealthService
-     */
-    protected $appHealthService;
     /**
       * __construct
       *
        * @return void
       */
-    public function __construct(AppHealthService $appHealthService)
-    {
-        $this->appHealthService = $appHealthService;
+    public function __construct(
+        protected AppHealthService $appHealthService,
+    ) {
     }
 
     public function healthz(Request $request)

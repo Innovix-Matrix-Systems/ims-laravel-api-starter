@@ -10,20 +10,19 @@ use App\Http\Services\Auth\RolePermissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-
-    private $rolePermissionService;
     /**
      * __construct
      *
      * @return void
      */
-    public function __construct(RolePermissionService $rolePermissionService)
-    {
-        $this->rolePermissionService = $rolePermissionService;
+    public function __construct(
+        protected RolePermissionService $rolePermissionService,
+    ) {
     }
 
     /**
@@ -31,7 +30,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny', Role::class);
+        Gate::authorize('viewAny', Role::class);
 
         $roles = Role::with('permissions')->get();
         return $this->sendSuccessCollectionResponse(
@@ -54,7 +53,7 @@ class RoleController extends Controller
      */
     public function store(RoleInsertUpdateRequest $request)
     {
-        $this->authorize('create', Role::class);
+        Gate::authorize('create', Role::class);
         $role = $this->rolePermissionService->insertRole(
             $request->name,
             $request->permissions ?? []
@@ -73,7 +72,7 @@ class RoleController extends Controller
     {
 
         $role = Role::findOrFail($id);
-        $this->authorize('view', $role);
+        Gate::authorize('view', $role);
         return $this->sendSuccessResponse(
             RoleResource::make($role),
             __('http-statuses.200'),
@@ -95,7 +94,7 @@ class RoleController extends Controller
     public function update(RoleInsertUpdateRequest $request)
     {
         $role = Role::findOrFail($request->id);
-        $this->authorize('update', $role);
+        Gate::authorize('update', $role);
         $name = $request->name;
         $updatedRole = $this->rolePermissionService->updateRole($role, $name);
         return $this->sendSuccessResponse(
@@ -111,14 +110,14 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         $role = Role::with('permissions')->findOrFail($id);
-        $this->authorize('delete', $role);
+        Gate::authorize('delete', $role);
         $this->rolePermissionService->deleteRole($role);
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
     public function assignPermission(RolePermissionAssignRequest $request)
     {
-        $this->authorize('create', Role::class);
+        Gate::authorize('create', Role::class);
         $role = Role::findOrFail($request->id);
         $role->syncPermissions($request->permissions);
         return $this->sendSuccessResponse(
