@@ -162,6 +162,24 @@ The newly created service will be located at `app/Http/Services/TestService.php`
 
 Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
 
+XSECURE setup 
+```bash
+php artisan xsecure:install
+```
+
+```ts
+import crypto from 'crypto'
+
+export const generateXsecureToken = (token: string, secretKey: string): string => {
+
+  const hmac = crypto.createHmac('sha256', secretKey)
+
+  hmac.update(token)
+
+  return hmac.digest('hex')
+}
+```
+
 ## Authors
 
 -   [@AHS12](https://www.github.com/AHS12)

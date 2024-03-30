@@ -6,16 +6,15 @@ use App\Enums\UserStatus;
 use App\Exceptions\Auth\LoginErrorException;
 use App\Http\Services\Misc\OtpService;
 use App\Models\User;
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Cache\RateLimiter;
+use App\Traits\RateLimitterTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthService
 {
+    use RateLimitterTrait;
     const USER_TOKEN_PREFIX = 'user_';
     const MAX_LOGIN_ATTEMPTS = 5;
     const MAX_DECAY_MINUTES = 1;
@@ -30,18 +29,13 @@ class AuthService
     const AUTH_OTP_SUCCESS_CODE = 11;
 
     /**
-     * @var OtpService
-     */
-    protected $otpService;
-
-    /**
      * __construct
      *
      * @return void
      */
-    public function __construct(OtpService $otpService)
-    {
-        $this->otpService = $otpService;
+    public function __construct(
+        protected OtpService $otpService,
+    ) {
     }
 
     /**
@@ -92,27 +86,6 @@ class AuthService
     }
 
     /**
-     * Get the rate limiter instance.
-     *
-     * @return \Illuminate\Cache\RateLimiter
-     */
-    protected function limiter()
-    {
-        return app(RateLimiter::class);
-    }
-
-    /**
-     * Get the throttle key for the given request.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return string
-     */
-    protected function throttleKey(Request $request)
-    {
-        return Str::transliterate(Str::lower($request->input('email').'|'.$request->ip()));
-    }
-
-    /**
      * Clear the login locks for the given user credentials.
      *
      * @param  \Illuminate\Http\Request $request
@@ -135,17 +108,6 @@ class AuthService
             $this->throttleKey($request),
             self::MAX_LOGIN_ATTEMPTS
         );
-    }
-
-    /**
-     * Fire an event when a lockout occurs.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return void
-     */
-    protected function fireLockoutEvent(Request $request)
-    {
-        event(new Lockout($request));
     }
 
     /**
