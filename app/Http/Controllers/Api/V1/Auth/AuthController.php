@@ -13,18 +13,16 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-
-    protected $authService;
-
     /**
      * __construct
      *
      * @return void
      */
-    public function __construct(AuthService $authService)
-    {
-        $this->authService = $authService;
+    public function __construct(
+        protected AuthService $authService,
+    ) {
     }
+
 
     /**
      * log the user in after verifying the otp
@@ -56,6 +54,6 @@ class AuthController extends Controller
     public function logout(LogoutRequest $request)
     {
         $this->authService->logout($request->device);
-        return new JsonResponse([], 204);
+        return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

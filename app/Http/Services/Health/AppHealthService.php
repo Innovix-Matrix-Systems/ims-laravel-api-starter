@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Health;
 
+use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;

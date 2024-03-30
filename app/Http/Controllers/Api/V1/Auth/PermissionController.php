@@ -9,26 +9,26 @@ use App\Http\Services\Auth\RolePermissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    private $rolePermissionService;
     /**
      * __construct
      *
      * @return void
      */
-    public function __construct(RolePermissionService $rolePermissionService)
-    {
-        $this->rolePermissionService = $rolePermissionService;
+    public function __construct(
+        protected RolePermissionService $rolePermissionService,
+    ) {
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $this->authorize('viewAny', Permission::class);
+        Gate::authorize('viewAny', Permission::class);
         $permissions = Permission::all();
         return $this->sendSuccessCollectionResponse(
             PermissionResource::collection($permissions),
@@ -50,7 +50,7 @@ class PermissionController extends Controller
      */
     public function store(PermissionInsertRequest $request)
     {
-        $this->authorize('create', Permission::class);
+        Gate::authorize('create', Permission::class);
         $permission = new Permission();
         $permission->name = $request->name;
         $permission->save();
@@ -91,7 +91,7 @@ class PermissionController extends Controller
     public function destroy(string $id)
     {
         $permission = Permission::findOrFail($id);
-        $this->authorize('delete', $permission);
+        Gate::authorize('delete', $permission);
         $this->rolePermissionService->deletePermission($permission);
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
