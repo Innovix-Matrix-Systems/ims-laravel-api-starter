@@ -19,6 +19,11 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "X-SECURITY-TOKEN",
+								"value": "eyJleHBpcnkiOjE3MTE5MDMzNTJ9.7fa3120cafda2a1e885c59f0b5ae877a775493594c00229ff24d88911081c074",
+								"type": "text"
 							}
 						],
 						"url": {

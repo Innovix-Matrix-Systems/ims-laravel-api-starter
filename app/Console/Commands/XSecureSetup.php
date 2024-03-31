@@ -35,9 +35,8 @@ class XSecureSetup extends Command
 
         // Generate the secret and token using openssl command
         $secret = trim(shell_exec('openssl rand -base64 32'));
-        $token = trim(shell_exec('openssl rand -base64 48'));
 
-        if (empty($secret) || empty($token)) {
+        if (empty($secret)) {
             $this->error('Failed to generate secret or token using openssl command.');
             exit(1);
         }
@@ -49,15 +48,11 @@ class XSecureSetup extends Command
         // Replace the existing XSECURITY_SECRET value
         $envContent = preg_replace('/^XSECURITY_SECRET=(.*)/m', 'XSECURITY_SECRET=' . $secret, $envContent);
 
-        // Replace the existing XSECURITY_TOKEN value
-        $envContent = preg_replace('/^XSECURITY_TOKEN=(.*)/m', 'XSECURITY_TOKEN=' . $token, $envContent);
-
         // Update the .env file with the new values
         if (file_put_contents($envFilePath, $envContent) !== false) {
             // Print the generated secret and token on the screen
             $this->info('Generated secret: ' . $secret);
-            $this->info('Generated token: ' . $token);
-            $this->info('XSECURITY_SECRET and XSECURITY_TOKEN keys have been updated in the .env file.');
+            $this->info('XSECURITY_SECRET key have been updated in the .env file.');
             exit(0);
         } else {
             $this->error('Failed to update .env file.');

@@ -49,12 +49,24 @@ class XSecurityMiddleware
      * @return bool
      */
 
-    private function isValidXSecureToken($signature)
+    private function isValidXSecureToken(string $signedToken): bool
     {
         $sharedSecretKey = config('app.xsecure_secret');
-        $sharedSecretToken = config('app.xsecure_token');
-
-        $expectedSignature = hash_hmac('sha256', $sharedSecretToken, $sharedSecretKey);
-        return hash_equals($expectedSignature, $signature);
+        // Extract token and signature
+        list($token, $signature) = explode('.', $signedToken);
+        // Calculate expected signature
+        $expectedSignature = hash_hmac('sha256', $token, $sharedSecretKey);
+        // Verify signature
+        if (!hash_equals($expectedSignature, $signature)) {
+            return false; // Signature verification failed
+        }
+        // Parse token payload
+        $payload = json_decode(base64_decode($token), true);
+        // Validate token expiry
+        if ($payload === null || !isset($payload['expiry'])) {
+            return false; // Invalid token format or missing expiry
+        }
+        return time() < $payload['expiry']; // Check if token has expired
     }
+
 }

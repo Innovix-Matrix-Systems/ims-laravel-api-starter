@@ -10,12 +10,11 @@ Explore this project and experience the convenience of a ready-made local develo
 
 ## Features
 
-- **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/11.x/sanctum).
+-   **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/11.x/sanctum).
 
-- **Role & Permission-Based Authorization**: Utilize [Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) for a flexible authorization system based on roles and permissions.
+-   **Role & Permission-Based Authorization**: Utilize [Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) for a flexible authorization system based on roles and permissions.
 
-- **Multiple Language Support**: Provide a multilingual experience with [Laravel Lang](https://laravel-lang.com/) to make your application accessible to a diverse user base.
-
+-   **Multiple Language Support**: Provide a multilingual experience with [Laravel Lang](https://laravel-lang.com/) to make your application accessible to a diverse user base.
 
 ## Required Commands to run locally
 
@@ -95,7 +94,6 @@ php artisan ide-helper:models -N
 php artisan ide-helper:models --nowrite
 ```
 
-
 9.**Fix PHP Lint and Run CS Fixer:**
 To fix PHP lint issues and run the Code Style Fixer, use the following command:
 
@@ -111,7 +109,9 @@ Open your web browser or use a tool like `curl` to access the health check endpo
 ```bash
 http://127.0.0.1:8000/api/healthz
 ```
+
 Upon hitting the health check endpoint, the app should respond with a JSON object similar to the following:
+
 ```json
 {
     "cache": true,
@@ -128,8 +128,125 @@ Verifying the health of your application is an essential step to ensure that all
 
 Remember to perform this health check regularly, especially after making significant changes to your application or its environment.
 
+## XSECURE Setup
+
+IMS introduces an additional layer of security, enhancing the API's reliability and resilience. With this system, only applications possessing a shared `XSECURITY_TOKEN` can send API requests to the server; others will be blocked. To get started, follow the guide below.
+
+### Getting Started
+
+By default, XSecure is disabled! To enable it, set the `XSECURITY_ENABLED` value to true in your `.env` file:
+
+```bash
+XSECURITY_ENABLED=true
+```
+
+Other wise it will be disabled.
+
+### Installation
+
+Execute the following command to set up XSECURE:
+
+```bash
+php artisan xsecure:install
+```
+
+This command generates a secret for your application and updates your .env file with the `XSECURITY_SECRET` field.
+
+After running the command, you will receive output similar to this:
+
+```bash
+Generated secret: zSaFVDakUcuT4+FVSom6RZTnCu7o/15PbtEBLwLNZxY=
+XSECURITY_SECRET key have been updated in the .env file.
+```
+
+Use this secret in your frontend or mobile app to generate a short-lived XSecure token, which will be verified by the backend server.
+
+### Token Generation
+
+Use the following examples to generate an `XSecure` token:
+
+### Typescript/Javascript Example
+
+```ts
+import crypto from "crypto";
+
+export const generateXsecureToken = (secretKey: string): string => {
+    // Calculate expiry timestamp (1 minute from current time)
+    const expiryTimestamp = Math.floor(Date.now() / 1000) + 60;
+
+    // Create payload object with expiry timestamp
+    const payload = { expiry: expiryTimestamp };
+
+    // Encode payload to Base64
+    const token = Buffer.from(JSON.stringify(payload)).toString("base64");
+
+    // Create HMAC signature using SHA-256 hash function
+    const hmac = crypto.createHmac("sha256", secretKey);
+
+    hmac.update(token);
+    const signature = hmac.digest("hex");
+
+    // Combine token and signature separated by a period
+    return `${token}.${signature}`;
+};
+```
+
+### Flutter/Dart Example
+
+```dart
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+
+String generateXsecureToken(String secretKey) {
+  // Calculate expiry timestamp (1 minute from current time)
+  int expiryTimestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000 + 60;
+
+  // Create payload map with expiry timestamp
+  Map<String, dynamic> payload = {'expiry': expiryTimestamp};
+
+  // Encode payload to Base64
+  String token = base64Url.encode(utf8.encode(jsonEncode(payload)));
+
+  // Create HMAC signature using SHA-256 hash function
+  Hmac hmac = Hmac(sha256, utf8.encode(secretKey));
+  String signature = hmac.convert(utf8.encode(token)).toString();
+
+  // Combine token and signature separated by a period
+  return '$token.$signature';
+}
+
+```
+
+### Example Token
+
+The generated token will resemble the following:
+
+```bash
+eyJleHBpcnkiOjE3MTE5MDE2NjJ9.89b9c45cffee0072ea160441e2462a7ae2de8b484f5d1f5bf4e57f90b1340e0c
+```
+
+Ensure you include this token in the `X-SECURITY-TOKEN` header when sending requests to the backend server for verification:
+
+```bash
+ X-SECURITY-TOKEN: eyJleHBpcnkiOjE3MTE5MDE2NjJ9.89b9c45cffee0072ea160441e2462a7ae2de8b484f5d1f5bf4e57f90b1340e0c
+```
+
+This header will authenticate and authorize your requests, ensuring secure communication with the backend server.
+
+### Handling Invalid Tokens
+
+If you send an invalid token, you will receive a JSON response like this:
+
+```bash
+{
+   "error": "Invalid XSECURE token"
+}
+```
+
 ## Running Test
+
 To execute tests for your application, utilize the following command:
+
 ```bash
 ./vendor/bin/pest
 ```
@@ -141,44 +258,34 @@ php artisan test
 Running tests is crucial to ensure the reliability and correctness of your application's functionality. The above command will initiate the testing process and provide you with valuable insights into the quality of your codebase.
 
 ## Extra Artisan Commands
+
 This project provides additional Artisan commands to simplify your workflow and enhance productivity.
 
 ### Run PHP CS Fixer
+
 ```bash
 php artisan csfixer:run
 ```
+
 This command ensures that your code adheres to the predefined coding standards, making your codebase clean and readable.
+
 ### Create a Service
+
 Creating services for your application is made effortless. Use the following command to generate a service:
+
 ```bash
 php artisan make:service subfolder/ServiceName
 ```
+
 Replace subfolder and ServiceName with the actual values you need. You can also create a service without a subfolder:
 
 ```bash
 php artisan make:service TestService
 ```
+
 The newly created service will be located at `app/Http/Services/TestService.php`, ready to handle your application's business logic.
 
 Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
-
-XSECURE setup 
-```bash
-php artisan xsecure:install
-```
-
-```ts
-import crypto from 'crypto'
-
-export const generateXsecureToken = (token: string, secretKey: string): string => {
-
-  const hmac = crypto.createHmac('sha256', secretKey)
-
-  hmac.update(token)
-
-  return hmac.digest('hex')
-}
-```
 
 ## Authors
 
@@ -189,4 +296,3 @@ export const generateXsecureToken = (token: string, secretKey: string): string =
 This project is brought to you by Innovix Matrix System and is released as open-source software under the [MIT license](https://opensource.org/licenses/MIT).
 
 Feel free to use, modify, and distribute this starter project in accordance with the MIT license terms. We encourage collaboration and welcome contributions from the community to make this project even better.
-
