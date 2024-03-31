@@ -52,6 +52,11 @@ class XSecurityMiddleware
     private function isValidXSecureToken(string $signedToken): bool
     {
         $sharedSecretKey = config('app.xsecure_secret');
+        $parts = explode('.', $signedToken);
+        if (count($parts) !== 2) {
+            // Invalid format: $signedToken does not contain a token and signature
+            return false;
+        }
         // Extract token and signature
         list($token, $signature) = explode('.', $signedToken);
         // Calculate expected signature
