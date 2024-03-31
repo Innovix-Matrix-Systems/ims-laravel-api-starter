@@ -129,6 +129,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application XSECURE Mode
+    |--------------------------------------------------------------------------
+    |
+    | IMS has some extra platfrom independed security system. This will prevent
+    | anyone from accessing any data in the application even if they have Access Tokenn.
+    | If disabled, The check will pass and Applicaion is not Protected.
+    |
+    */
+
+    'xsecure_enabled'   => (bool) env('XSECURITY_ENABLED', false),
+    'xsecure_secret'    => env('XSECURITY_SECRET'),
+    'xsecure_token'     => env('XSECURITY_TOKEN'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
     |
