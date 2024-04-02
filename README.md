@@ -16,6 +16,8 @@ Explore this project and experience the convenience of a ready-made local develo
 
 -   **Multiple Language Support**: Provide a multilingual experience with [Laravel Lang](https://laravel-lang.com/) to make your application accessible to a diverse user base.
 
+-   **Application and Database Backup System**: Provide an application and database backup system with [laravel-backup](https://spatie.be/docs/laravel-backup/v8/introduction) to make your application safe and ready for quick recovery.
+
 ## Required Commands to run locally
 
 1.**Create Your Project from the Template:**
@@ -256,6 +258,17 @@ php artisan test
 ```
 
 Running tests is crucial to ensure the reliability and correctness of your application's functionality. The above command will initiate the testing process and provide you with valuable insights into the quality of your codebase.
+
+## Backup System
+
+The backup system is provided by [laravel-backup](https://spatie.be/docs/laravel-backup/v8/introduction).
+
+you can run the following commad to generate a backup:
+```bash
+php artisan backup:run
+```
+
+also the schedular is configured to do schedule backup and cleanup of your application.
 
 ## Extra Artisan Commands
 
