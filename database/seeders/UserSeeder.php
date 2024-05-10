@@ -59,6 +59,6 @@ class UserSeeder extends Seeder
         $superAdmin->last_login_at = now();
         $superAdmin->save();
 
-        $superAdmin->assignRole(UserRole::SUPER_ADMIN, UserRole::ADMIN);
+        $superAdmin->assignRole(UserRole::SUPER_ADMIN);
     }
 }

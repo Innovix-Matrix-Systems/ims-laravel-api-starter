@@ -74,6 +74,61 @@ Please visit this [wiki page](https://github.com/Innovix-Matrix-Systems/ims-lara
 ## WIKI
 Please Visit the [WIKI](https://github.com/Innovix-Matrix-Systems/ims-laravel-api-starter/wiki) Page for XSECURE, Docker Guide, Extra Artisan commands and much more.
 
+## Extra Artisan Commands
+
+### Generate IDE Helper Files:
+
+Generate general IDE helper files for improved code autocompletion and navigation by running:
+
+```bash
+php artisan ide-helper:generate
+```
+
+Generate IDE model helper files without writing to model files using:
+
+```bash
+#use any one of this two commands
+php artisan ide-helper:models -N
+php artisan ide-helper:models --nowrite
+```
+
+### Run PHP CS Fixer
+
+```bash
+php artisan csfixer:run
+```
+
+This command ensures that your code adheres to the predefined coding standards, making your codebase clean and readable.
+
+### Create a Service
+
+Creating services for your application is made effortless. Use the following command to generate a service:
+
+```bash
+php artisan make:service subfolder/ServiceName
+```
+
+Replace subfolder and ServiceName with the actual values you need. You can also create a service without a subfolder:
+
+```bash
+php artisan make:service TestService
+```
+
+The newly created service will be located at `app/Http/Services/TestService.php`, ready to handle your application's business logic.
+
+### Create a DTO
+
+Creating DTO(Data Transfer Object) for your application is made effortless. Use the following command to generate a service:
+
+
+```bash
+php artisan make:dto UserDTO
+```
+
+The newly created DTO will be located at `app/Http/DTOs/UserDTO.php`, ready to Transfer your data across the application.
+
+Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
+
 ## Authors
 
 -   [@AHS12](https://www.github.com/AHS12)

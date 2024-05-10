@@ -19,7 +19,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->hasPermissionTo('user.view');
+        return $user->hasPermissionTo('user.view') || $user->id == $model->id;
     }
 
     /**
@@ -38,11 +38,22 @@ class UserPolicy
         if($model->isSuperAdmin() && !$user->isSuperAdmin()) {
             return false;
         }
-        if($user->hasPermissionTo('user.update')) {
-            return true;
-        };
+        return $user->hasPermissionTo('user.update') || $user->id == $model->id;
+    }
 
-        return $user->id == $model->id;
+
+    /**
+     * Determine whether the user can assign a role to the model.
+     */
+    public function assignRole(User $user, User $model): bool
+    {
+        if ($model->isSuperAdmin()) {
+            return false;
+        }
+        if ($user->isAdmin() && !$model->isAdmin()) {
+            return true;
+        }
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
     /**

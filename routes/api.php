@@ -28,6 +28,9 @@ Route::get('/http-test', function (Request $request) {
 include "api/v1/Auth/LoginRoutes.php";
 include "api/v1/RolePermission/RolePermissionRoutes.php";
 
+//User routes
+include "api/v1/User/UserRoutes.php";
+
 
 
 

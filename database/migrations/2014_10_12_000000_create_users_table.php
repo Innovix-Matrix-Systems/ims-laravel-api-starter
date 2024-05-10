@@ -21,12 +21,16 @@ return new class extends Migration {
             $table->string('phone')->nullable()->unique();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
+            $table->string('designation')->nullable();
+            $table->text('address')->nullable();
             $table->string('company_name')->nullable();
             $table->text('company_address')->nullable();
             $table->string('last_otp')->nullable();
             $table->string('last_active_device')->nullable();
             $table->timestamp('last_login_at')->nullable();
             $table->boolean('is_active')->default(1);
+            $table->bigInteger('created_by')->nullable();
+            $table->bigInteger('updated_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

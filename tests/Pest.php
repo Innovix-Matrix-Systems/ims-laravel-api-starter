@@ -1,4 +1,6 @@
 <?php
+use App\Enums\UserRole;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,4 +51,47 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function generateUser()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::USER);
+    return $user;
+}
+
+function generateSuperAdmin()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::SUPER_ADMIN);
+    return $user;
+}
+
+function generateAdmin()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::ADMIN);
+    return $user;
+}
+
+function generateUserAndAuthToken()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::USER);
+    $token = $user->createToken('test')->plainTextToken;
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
+}
+
+function generateSuperAdminUserAndAuthToken()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::SUPER_ADMIN);
+    $token = $user->createToken('test')->plainTextToken;
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
 }
