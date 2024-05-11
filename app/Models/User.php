@@ -30,12 +30,17 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'designation',
+        'address',
         'company_name',
         'company_address',
         'last_otp',
         'last_active_device',
         'is_active',
         'last_login_at',
+        'created_by',
+        'updated_by',
+
     ];
 
     /**

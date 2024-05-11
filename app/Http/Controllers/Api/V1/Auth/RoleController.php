@@ -31,8 +31,7 @@ class RoleController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Role::class);
-
-        $roles = Role::with('permissions')->get();
+        $roles = Role::all();
         return $this->sendSuccessCollectionResponse(
             RoleResource::collection($roles),
             __('http-statuses.200'),
@@ -71,7 +70,7 @@ class RoleController extends Controller
     public function show(string $id)
     {
 
-        $role = Role::findOrFail($id);
+        $role = Role::findOrFail($id)->load('permissions');
         Gate::authorize('view', $role);
         return $this->sendSuccessResponse(
             RoleResource::make($role),

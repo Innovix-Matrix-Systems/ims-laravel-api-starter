@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Traits\RolePermissionTrait;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
+    use RolePermissionTrait;
     /**
      * Run the database seeds.
      */
@@ -14,67 +16,9 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             //role
-            [
-                'name' => 'role.view',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'role.view.all',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'role.create',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'role.update',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'role.delete',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ...$this->getRolePermissions(),
             //user
-            [
-                'name' => 'user.view',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'user.view.all',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'user.create',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'user.update',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'user.delete',
-                'guard_name' => config('constants.GUARD_NAME'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ...$this->getUserPermissions(),
         ];
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Permission::insert($permissions);

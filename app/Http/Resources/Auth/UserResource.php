@@ -15,20 +15,9 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'user_name' => $this->user_name,
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'phone_verified_at' => $this->phone_verified_at,
-            'company_name' => $this->company_name,
-            'company_address' => $this->company_address,
-            'last_active_device' => $this->last_active_device,
-            'is_active' => $this->is_active,
-            'last_login_at' => $this->last_login_at,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'roles' =>  $this->getRoleNames(),
-            'permissions' => PermissionResource::collection($this->getAllPermissions()),
+            ...parent::toArray($request),
+            'roles' => $this->whenLoaded('roles') ? $this->getRoleNames() : [],
+            'permissions' => PermissionResource::collection($this->whenLoaded('permissions')),
         ];
     }
 }

@@ -3,12 +3,14 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
+use App\Traits\RolePermissionTrait;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
+    use RolePermissionTrait;
     private $guard = "sanctum";
     /**
      * Run the database seeds.
@@ -29,7 +31,10 @@ class RoleSeeder extends Seeder
             'guard_name' => config('constants.GUARD_NAME'),
             'name' => UserRole::ADMIN
         ]);
-        $admin->givePermissionTo(['role.view.all','user.view.all','user.view','user.update']);
+        $admin->givePermissionTo([
+            'role.view.all',
+            ...array_column($this->getUserPermissions(['user.delete']), 'name'),
+        ]);
 
         Role::create([
             'guard_name' => config('constants.GUARD_NAME'),

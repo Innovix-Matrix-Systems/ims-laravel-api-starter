@@ -7,43 +7,39 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MakeServiceCommand extends Command
+class MakeDTOCommand extends Command
 {
     /**
      * argumentName
      *
      * @var string
      */
-    public $argumentName = 'service';
-
+    public $argumentName = 'dto';
 
     /**
      * Name and signiture of Command.
      * name
      * @var string
      */
-    protected $name = 'make:service';
-
+    protected $name = 'make:dto';
 
     /**
      * command description.
      * description
      * @var string
      */
-    protected $description = 'create a new service class';
-
-
+    protected $description = 'create a new DTO';
 
     /**
-     * Get command agrumants - EX : UserService
+     * Get Command argumant EX : HasAuth
      * getArguments
      *
-     * @return array<int|string>[]
+     * @return array
      */
     protected function getArguments()
     {
         return [
-            ['service', InputArgument::REQUIRED, 'The name of the service class.'],
+            ['dto', InputArgument::REQUIRED, 'The name of the DTO'],
         ];
     }
 
@@ -58,65 +54,53 @@ class MakeServiceCommand extends Command
         parent::__construct();
     }
 
-
     /**
-     * Return Service name as convention
-     * getServiceName
+     * getDTOName
      *
      * @return string
      */
-    private function getServiceName()
+    private function getDTOName()
     {
-        $service = Str::studly($this->argument('service'));
-
-        if (Str::contains(strtolower($service), 'service') === false) {
-            $service .= 'Service';
-        }
-
-        return $service;
+        $dto = Str::studly($this->argument('dto'));
+        return $dto;
     }
 
     /**
-     * Return destination path for class file publish
      * getDestinationFilePath
      *
      * @return string
      */
     protected function getDestinationFilePath()
     {
-        return app_path() . "/Http/Services" . '/' . $this->getServiceName() . '.php';
+        return app_path() . "/Http/DTOs" . '/' . $this->getDTOName() . '.php';
     }
 
-
     /**
-     * Return only service class name
-     * getServiceNameWithoutNamespace
+     * getDTONameWithoutNamespace
      *
      * @return string
      */
-    private function getServiceNameWithoutNamespace()
+    private function getDTONameWithoutNamespace()
     {
-        return class_basename($this->getServiceName());
+        return class_basename($this->getDTOName());
     }
 
     /**
-     * Set Default Namespace
-     * Override CommandGenerator class method
-     * getDefaultNamespace
+     * getClassNamespace
      *
      * @return string
      */
     public function getDefaultNamespace(): string
     {
-        return "App\\Http\\Services";
+        return "App\\Http\\DTOs";
     }
 
     /**
-    * Return a vaid class name
-    * getClass
-    *
+     * Return a vaid class name
+     * getClass
+     *
      * @return string
-    */
+     */
     public function getClass()
     {
         return class_basename($this->argument($this->argumentName));
@@ -144,17 +128,14 @@ class MakeServiceCommand extends Command
         return trim($namespace, '\\');
     }
 
-
     /**
-     * Return stub file path
      * getStubFilePath
      *
      * @return string
      */
     protected function getStubFilePath()
     {
-        $stub = '/stubs/services.stub';
-
+        $stub = '/stubs/dto.stub';
         return $stub;
     }
 
@@ -169,7 +150,7 @@ class MakeServiceCommand extends Command
 
         $replaceOptions = [
             'CLASS_NAMESPACE'   => $this->getClassNamespace(),
-            'CLASS'             => $this->getServiceNameWithoutNamespace()
+            'CLASS'             => $this->getDTONameWithoutNamespace()
         ];
 
         foreach ($replaceOptions as $search => $replace) {
@@ -212,7 +193,10 @@ class MakeServiceCommand extends Command
         }
 
         File::put($path, $fileContents);
-        $this->info("Service generated successfully! path : {$path}");
+        $this->info("DTO generated successfully! path : {$path}");
         exit(0);
+
+        //return 0;
+
     }
 }

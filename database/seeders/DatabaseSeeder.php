@@ -21,6 +21,10 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         //user Seeder
         $this->call(UserSeeder::class);
+        if (app()->environment('local', 'development')) {
+            //random user
+            \App\Models\User::factory(10)->create();
+        }
 
         Model::reguard(); // Enable mass assignment
     }
