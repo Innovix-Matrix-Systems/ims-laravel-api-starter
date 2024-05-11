@@ -85,6 +85,17 @@ function generateUserAndAuthToken()
     ];
 }
 
+function generateAdminUserAndAuthToken()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::ADMIN);
+    $token = $user->createToken('test')->plainTextToken;
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
+}
+
 function generateSuperAdminUserAndAuthToken()
 {
     $user = User::factory()->create();
