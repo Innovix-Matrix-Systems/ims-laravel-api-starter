@@ -18,8 +18,8 @@ beforeEach(function () {
 });
 
 it('should update user profile password', function () {
-    $this->userService->updateUserPassword($this->testUser, '123456', 'password');
-    expect(Hash::check('123456', $this->testUser->password))->toBeTrue();
+    $this->userService->updateUserPassword($this->testUser, 'password', '123456');
+    expect(Hash::check('password', $this->testUser->password))->toBeTrue();
 });
 
 it('should not update user profile password for incorrect current password', function () {

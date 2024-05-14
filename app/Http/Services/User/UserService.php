@@ -28,7 +28,7 @@ class UserService
         $user->phone = $data->phone;
         $user->designation = $data->designation;
         $user->address = $data->address;
-        $user->is_active = $data->isActive ?? UserStatus::ACTIVE;
+        $user->is_active = $data->isActive ? UserStatus::ACTIVE : UserStatus::DEACTIVE;
         $user->created_by = auth()->id();
 
         DB::beginTransaction();
@@ -60,7 +60,7 @@ class UserService
         $user->address = $data->address;
         $user->updated_by = auth()->id();
         if(!$isProfileUpdate) {
-            $user->is_active = $data->isActive ?? UserStatus::ACTIVE;
+            $user->is_active = $data->isActive ? UserStatus::ACTIVE : UserStatus::DEACTIVE;
         }
         $user->save();
 

@@ -28,6 +28,7 @@ it('should returns a successful response after inserting a User', function () {
                 'phone' => '1234567890',
                 'designation' => 'manager',
                 'address' => 'test address',
+                'is_active' => UserStatus::ACTIVE->value,
                 'roles' => [UserRoleID::USER_ID->value],
             ]);
     $response->assertStatus(201);
@@ -84,7 +85,7 @@ it('should returns a successful response after updating a User', function () {
     $this->assertTrue($data['data']['email'] === 'test@2211test.com');
     $this->assertTrue($data['data']['phone'] === '1234567890');
     $this->assertTrue($data['data']['address'] === 'test address update');
-    $this->assertTrue($data['data']['is_active'] === (string)UserStatus::DEACTIVE->value);
+    $this->assertTrue($data['data']['is_active'] === UserStatus::DEACTIVE->value);
     $this->assertTrue($data['data']['updated_by'] === $this->adminUser->id);
 
 });

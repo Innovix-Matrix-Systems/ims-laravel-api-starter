@@ -46,7 +46,7 @@ class AuthService
      */
     protected function verifyBeforeLogin(User $user)
     {
-        if ($user->is_active == UserStatus::DEACTIVE) {
+        if ($user->is_active == UserStatus::DEACTIVE->value) {
             return self::AUTH_ERROR_DEACTIVE;
         }
         if (!$user->email_verified_at) {

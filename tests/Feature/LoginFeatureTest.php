@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Enums\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 $testUser;
 
 beforeEach(function () {
-    $this->testUser = User::factory()->create();
+    $this->testUser = generateUser();
 });
 
 it('should returns a successful login response with correct credentials', function () {
@@ -17,7 +17,7 @@ it('should returns a successful login response with correct credentials', functi
         'Accept' => 'application/json',
     ])->postJson('/api/v1/login', [
         'email'     => $this->testUser->email,
-        'password'  => 'password',
+        'password'  => '123456',
         'device'    => 'testDevice',
     ]);
 
@@ -25,6 +25,21 @@ it('should returns a successful login response with correct credentials', functi
 });
 
 it('should not returns a successful login response with in correct credentials', function () {
+
+    $response = $this->withHeaders([
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/login', [
+        'email'     => $this->testUser->email,
+        'password'  => 'wrongPassword',
+        'device'    => 'testDevice',
+    ]);
+
+    $response->assertStatus(400);
+});
+
+it('should not returns a successful login response for inactive user', function () {
+
+    $this->testUser->update(['is_active' => UserStatus::DEACTIVE]);
 
     $response = $this->withHeaders([
         'Accept' => 'application/json',

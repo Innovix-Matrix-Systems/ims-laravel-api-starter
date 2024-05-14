@@ -35,16 +35,17 @@ it('should create a User', function () {
         [UserRole::USER]
     );
     $user = $this->userService->insertUserData($userData)->load('roles');
+    // dump($user);
     expect($user)->toBeInstanceOf(User::class);
     expect(User::where('name', 'test name')->exists())->toBeTrue();
     expect($user->email)->toBe('test@test.com');
     expect($user->phone)->toBe('012378723200');
-    expect($user->is_active)->toBe('1');
+    expect($user->is_active)->toBe(UserStatus::ACTIVE);
     expect($user->roles()->pluck('name')->toArray())->toContain(UserRole::USER->value);
 });
 
 
-it('should update a supplier', function () {
+it('should update a user', function () {
     $userData = new UserDTO(
         null,
         null,
@@ -80,7 +81,7 @@ it('should update a supplier', function () {
     expect($updatedUser->email)->toBe('test@2test.com');
     expect($updatedUser->phone)->toBe('012872320010');
     expect($updatedUser->address)->toBe('test addresss update');
-    expect($updatedUser->is_active)->toBe((string)UserStatus::DEACTIVE->value);
+    expect($updatedUser->is_active)->toBe(UserStatus::DEACTIVE);
 });
 
 it('should delete a user', function () {
