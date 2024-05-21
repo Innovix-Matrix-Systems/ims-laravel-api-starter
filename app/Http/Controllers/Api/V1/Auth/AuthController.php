@@ -33,7 +33,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)
-            ->with('roles.permissions')
+            ->with('roles.permissions', 'permissions')
             ->first();
         $authData = $this->authService->login(
             $user,

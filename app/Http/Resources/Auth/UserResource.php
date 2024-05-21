@@ -4,6 +4,7 @@ namespace App\Http\Resources\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\MissingValue;
 
 class UserResource extends JsonResource
 {
@@ -14,10 +15,14 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $isPermissionLoaded = !$this->whenLoaded('permissions') instanceof MissingValue;
+        $data = [
             ...parent::toArray($request),
             'roles' => $this->whenLoaded('roles') ? $this->getRoleNames() : [],
-            'permissions' => PermissionResource::collection($this->whenLoaded('permissions')),
         ];
+        if ($isPermissionLoaded) {
+            $data['permissions'] = PermissionResource::collection($this->getPermissionsViaRoles());
+        }
+        return $data;
     }
 }
