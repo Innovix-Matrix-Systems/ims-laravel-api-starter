@@ -216,7 +216,7 @@ class UserController extends Controller
     public function changeProfilePassword(UserPasswordUpdateRequest $request)
     {
         $user = User::findOrFail(auth()->id())->load('roles');
-        Gate::authorize('update', User::class);
+        Gate::authorize('update', $user);
         $updatedUser = $this->userService->updateUserPassword(
             $user,
             $request->password,

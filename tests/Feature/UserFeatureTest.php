@@ -115,3 +115,33 @@ it('should returns a error response when admin try to delete a user', function (
     ])->deleteJson("/api/v1/user/$userId");
     $response->assertStatus(403);
 });
+
+it('should returns success after updating user password', function () {
+
+    $userCreateResponse = $this->withHeaders([
+        'Accept' => 'application/json',
+        'authorization' => "Bearer $this->authToken",
+    ])->postJson('/api/v1/user', [
+                'name' => 'test name',
+                'email' => 'test@test.com',
+                'password' => '123456',
+                'password_confirmation' => '123456',
+                'phone' => '1234567890',
+                'designation' => 'manager',
+                'address' => 'test address',
+                'roles' => [UserRoleID::USER_ID->value],
+            ]);
+
+    $newUserData = $userCreateResponse->json();
+    $userId = $newUserData['data']['id'];
+
+    $response = $this->withHeaders([
+        'Accept' => 'application/json',
+        'authorization' => "Bearer $this->authToken",
+    ])->postJson("/api/v1/user/change-password", [
+        'user_id' => $userId,
+        'password' => '123456',
+        'password_confirmation' => '123456',
+    ]);
+    $response->assertStatus(200);
+});

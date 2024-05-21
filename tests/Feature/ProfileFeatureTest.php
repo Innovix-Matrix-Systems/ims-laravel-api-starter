@@ -55,3 +55,16 @@ it('should returns a successful response for updating user profile', function ()
     $this->assertTrue($data['data']['designation'] === 'manager');
     $this->assertTrue($data['data']['address'] === 'test address');
 });
+
+it('should returns a successful response after updating user password', function () {
+
+    $response = $this->withHeaders([
+        'Accept' => 'application/json',
+        'authorization' => "Bearer $this->authToken",
+    ])->postJson("/api/v1/user/profile/change-password", [
+        'current_password' => '123456',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+    $response->assertStatus(200);
+});
