@@ -1,5 +1,6 @@
 <?php
 use App\Enums\UserRole;
+use App\Enums\UserRoleID;
 use App\Models\User;
 
 /*
@@ -62,7 +63,10 @@ function generateUser()
 
 function generateSuperAdmin()
 {
+    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
     $user = User::factory()->create();
+    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
+    $user->save();
     $user->assignRole(UserRole::SUPER_ADMIN);
     return $user;
 }
@@ -98,7 +102,10 @@ function generateAdminUserAndAuthToken()
 
 function generateSuperAdminUserAndAuthToken()
 {
+    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
     $user = User::factory()->create();
+    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
+    $user->save();
     $user->assignRole(UserRole::SUPER_ADMIN);
     $token = $user->createToken('test')->plainTextToken;
     return [

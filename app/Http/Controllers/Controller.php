@@ -24,9 +24,9 @@ class Controller extends BaseController
     public function sendSuccessResponse($result = [], $message = '', $code = Response::HTTP_OK)
     {
         $response = [
-            'data'      => $result,
-            'success'   => true,
-            'message'   => $message,
+            'data' => $result,
+            'success' => true,
+            'message' => $message,
         ];
         if (empty($result)) {
             unset($response['data']);
@@ -46,9 +46,9 @@ class Controller extends BaseController
     public function sendSuccessCollectionResponse($collection, $message, $code = Response::HTTP_OK)
     {
         $response = [
-            'data'      => $collection,
-            'success'   => true,
-            'message'   => $message,
+            'data' => $collection,
+            'success' => true,
+            'message' => $message,
         ];
 
         return new JsonResponse($response, $code);
@@ -156,6 +156,32 @@ class Controller extends BaseController
     }
 
     /**
+     * Apply Select filters to a model relation.
+     *
+     * @param string               $relation     The relation to filter within.
+     * @param Builder              $model        The model to search on.
+     * @param array<string, mixed> $selectFields The fields to search in.
+     *
+     * @return Builder The filtered model.
+     */
+    public function applyRelationSelectFilters(
+        string $relation,
+        Builder $model,
+        array $selectFields
+    ): Builder {
+        $selectFields = array_filter($selectFields, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+        return $model->whereHas($relation, function (Builder $query) use ($selectFields) {
+            $query->where(function ($query) use ($selectFields) {
+                foreach ($selectFields as $field => $value) {
+                    $query->orWhere($field, '=', $value);
+                }
+            });
+        });
+    }
+
+    /**
      * Apply Filters to a model.
      *
      * @param  ?string              $searchText   The text to search for.
@@ -170,21 +196,14 @@ class Controller extends BaseController
         array $searchFields,
         array $selectFields,
         Builder $model,
-        ?string $relation = null,
     ): Builder {
-
         if ($searchText && !empty($searchFields)) {
-            if($relation) {
-                $model = $this->applyRelationSearchFilters($relation, $searchText, $searchFields, $model);
-            } else {
-                $model = $this->applySearchFilters($searchText, $model, $searchFields);
-            }
+            $model = $this->applySearchFilters($searchText, $model, $searchFields);
         }
 
         if (!empty($selectFields)) {
-            return $this->applySelectFilters($model, $selectFields);
+            $model = $this->applySelectFilters($model, $selectFields);
         }
-
         return $model;
     }
 }

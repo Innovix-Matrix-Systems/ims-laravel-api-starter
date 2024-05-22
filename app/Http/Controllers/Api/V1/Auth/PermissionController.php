@@ -28,7 +28,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', Permission::class);
+        // Gate::authorize('viewAny', Permission::class);
         $permissions = Permission::all();
         return $this->sendSuccessCollectionResponse(
             PermissionResource::collection($permissions),
