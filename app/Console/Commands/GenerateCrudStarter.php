@@ -34,6 +34,7 @@ class GenerateCrudStarter extends Command
             ],
             'request' => ['make:request', ['name' => "{$name}/{$name}InsertUpdateRequest"]],
             'resource' => ['make:resource', ['name' => "{$name}/{$name}Resource"]],
+            'policy' => ['make:policy', ['name' => "{$name}Policy", '--model' => $name]],
             'service' => ['make:service', ['service' => "{$name}/{$name}Service"]],
             'dto' => ['make:dto', ['dto' => "{$name}DTO"]],
             'route' => ['make:route', ['name' => $name]]
@@ -41,8 +42,15 @@ class GenerateCrudStarter extends Command
 
         foreach ($tasks as $taskName => $task) {
             [$command, $arguments] = $task;
-            if ($this->callArtisanCommand($taskName, $command, $arguments)) {
-                return;
+            if ($taskName === 'controller') {
+                if (isset($arguments['--api'])) {
+                    $this->callArtisanCommand('API Controller', 'make:controller', $arguments);
+                } else {
+                    unset($arguments['--api']); // Remove --api option
+                    $this->callArtisanCommand('Controller', 'make:controller', $arguments);
+                }
+            } else {
+                $this->callArtisanCommand($taskName, $command, $arguments);
             }
         }
 
