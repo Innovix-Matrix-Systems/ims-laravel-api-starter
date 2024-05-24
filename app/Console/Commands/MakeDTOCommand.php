@@ -189,14 +189,12 @@ class MakeDTOCommand extends Command
 
         if (File::exists($path)) {
             $this->error("File {$path} already exists!");
-            exit(1);
+            return 1;
         }
 
         File::put($path, $fileContents);
         $this->info("DTO generated successfully! path : {$path}");
-        exit(0);
-
-        //return 0;
+        return 0;
 
     }
 }

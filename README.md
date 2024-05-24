@@ -127,6 +127,18 @@ php artisan make:dto UserDTO
 
 The newly created DTO will be located at `app/Http/DTOs/UserDTO.php`, ready to Transfer your data across the application.
 
+
+### Create CRUD Starter
+
+Generate all the necessary boilerplate files for a specific entity (such as model, controller, routes, resource, request, service, etc.) using the following command:
+
+
+```bash
+php artisan make:crud Test
+```
+
+This command will create all the required boilerplate files for the `Test` entity.
+
 Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
 
 ## Authors

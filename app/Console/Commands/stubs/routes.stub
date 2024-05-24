@@ -1,0 +1,12 @@
+<?php
+
+use App\Http\Controllers\$CONTROLLER_PATH$;
+
+Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/$NAME$', [$CONTROLLER$::class, 'index']);
+    Route::get('/$NAME$/{id}', [$CONTROLLER$::class, 'show']);
+    Route::post('/$NAME$', [$CONTROLLER$::class, 'store']);
+    Route::post('/$NAME$/update', [$CONTROLLER$::class, 'update']);
+    Route::delete('/$NAME$/{id}', [$CONTROLLER$::class, 'destroy']);
+    // Add more routes as needed
+});

@@ -38,7 +38,7 @@ class MakeServiceCommand extends Command
      * Get command agrumants - EX : UserService
      * getArguments
      *
-     * @return array<int|string>[]
+     * @return array
      */
     protected function getArguments()
     {
@@ -208,11 +208,11 @@ class MakeServiceCommand extends Command
 
         if (File::exists($path)) {
             $this->error("File {$path} already exists!");
-            exit(1);
+            return 1;
         }
 
         File::put($path, $fileContents);
         $this->info("Service generated successfully! path : {$path}");
-        exit(0);
+        return 0;
     }
 }
