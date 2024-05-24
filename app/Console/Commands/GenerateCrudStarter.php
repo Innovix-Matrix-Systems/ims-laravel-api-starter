@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 class GenerateCrudStarter extends Command
 {
@@ -18,11 +19,12 @@ class GenerateCrudStarter extends Command
     public function handle()
     {
         $name = $this->argument('name');
+        $snakeName = Str::snake($name);
 
         $this->info("Creating CRUD for {$name}");
 
         $tasks = [
-            'migration' => ['make:migration', ['name' => "create_{$name}_table"]],
+            'migration' => ['make:migration', ['name' => "create_{$snakeName}_table"]],
             'model' => ['make:model', ['name' => $name]],
             'controller' => [
                 'make:controller',
