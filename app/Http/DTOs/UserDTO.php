@@ -5,17 +5,17 @@ namespace App\Http\DTOs;
 class UserDTO
 {
     public function __construct(
-        public ?int $id,
-        public ?string $firstName,
-        public ?string $lastName,
-        public ?string $name,
-        public ?string $email,
-        public ?string $password,
-        public ?string $phone,
-        public ?string $designation,
-        public ?string $address,
-        public ?string $isActive,
-        public mixed $roles,
+        public readonly ?int $id,
+        public readonly ?string $firstName,
+        public readonly ?string $lastName,
+        public readonly ?string $name,
+        public readonly ?string $email,
+        public readonly ?string $password,
+        public readonly ?string $phone,
+        public readonly ?string $designation,
+        public readonly ?string $address,
+        public readonly ?string $isActive,
+        public readonly mixed $roles,
     ) {
     }
 }
