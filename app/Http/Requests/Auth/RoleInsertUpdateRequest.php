@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RoleInsertUpdateRequest extends FormRequest
 {
@@ -23,7 +24,9 @@ class RoleInsertUpdateRequest extends FormRequest
     {
         $validations = [
             'id'      => 'required|exists:roles,id',
-            'name'    => 'required|string|max:20|unique:roles,name,'.$this->id.',id',
+            // 'name'    => 'required|string|max:20|unique:roles,name,'.$this->id.',id',
+            'name'    => Rule::unique('roles', 'name')->ignore((int) $this->id, 'id'),
+            
             'permissions' => 'nullable|array|min:1',
             'permissions.*' => 'nullable|exists:permissions,id',
         ];

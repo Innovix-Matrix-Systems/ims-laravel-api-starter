@@ -2,13 +2,10 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "vite build"
+        "build": "echo 'No build step required for API-only project'"
     },
     "devDependencies": {
         "axios": "^1.1.2",
-        "husky": "^8.0.3",
-        "laravel-vite-plugin": "^0.8.0",
-        "vite": "^4.0.0"
+        "husky": "^8.0.3"
     }
 }
