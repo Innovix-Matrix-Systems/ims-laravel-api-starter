@@ -16,10 +16,19 @@ class LanguageMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = explode(',', $request->header('Accept-Language'))[0] ?? config('app.locale');
-        app()->setLocale($locale);
-        Carbon::setLocale($locale);
+        // Try to get the locale from the Accept-Language header, or use app.locale, or fallback_locale if not set
+        $locale = explode(',', $request->header('Accept-Language'))[0]
+            ?? config('app.locale')
+            ?? config('app.fallback_locale');
 
-        return $next($request);
+        // Check if the locale is supported or is a wildcard ("*")
+        if ($locale === '*' || ! in_array($locale, config('app.supported_locales', []))) {
+            $locale = config('app.fallback_locale', config('app.locale')); // Fallback to default locale if unsupported
+        }
+
+        app()->setLocale($locale);  // Set the app's locale
+        Carbon::setLocale($locale);  // Set Carbon's locale
+
+        return $next($request);  // Continue processing the request
     }
 }
