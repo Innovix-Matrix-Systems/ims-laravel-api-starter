@@ -100,6 +100,21 @@ return [
     'fallback_locale' => 'en',
 
     /*
+    |---------------------------------------------------------------------------
+    | Supported Locales for the Application
+    |---------------------------------------------------------------------------
+    |
+    | This array defines the locales that are supported by your application.
+    | The application will use one of these locales based on the user's language
+    | preference. If a requested locale is not in the list, the application
+    | will fallback to the default locale specified in the `app.locale` setting.
+    |
+    | Example: ['en', 'bn'] means the application supports English and Bengali.
+    |
+    */
+    'supported_locales' => ['en', 'bn'],
+
+    /*
     |--------------------------------------------------------------------------
     | Faker Locale
     |--------------------------------------------------------------------------
