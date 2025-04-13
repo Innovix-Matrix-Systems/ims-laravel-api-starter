@@ -37,7 +37,7 @@ it('should returns a successful response after inserting a User', function () {
     $this->assertTrue($data['data']['phone'] === '1234567890');
     $this->assertTrue($data['data']['address'] === 'test address');
     $this->assertTrue($data['data']['designation'] === 'manager');
-    $this->assertTrue($data['data']['is_active'] === UserStatus::ACTIVE->value);
+    $this->assertTrue($data['data']['is_active'] === true);
     $this->assertTrue($data['data']['created_by'] === $this->adminUser->id);
     $this->assertTrue($data['data']['roles'][0] === UserRole::USER->value);
 
@@ -65,7 +65,7 @@ it('should returns a successful response after updating a User', function () {
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson('/api/v1/user/update', [
+    ])->patchJson("/api/v1/user/{$userId}", [
         'id' => $userId,
         'name' => 'test user update',
         'email' => 'test@2211test.com',
@@ -81,7 +81,7 @@ it('should returns a successful response after updating a User', function () {
     $this->assertTrue($data['data']['email'] === 'test@2211test.com');
     $this->assertTrue($data['data']['phone'] === '1234567890');
     $this->assertTrue($data['data']['address'] === 'test address update');
-    $this->assertTrue($data['data']['is_active'] === UserStatus::DEACTIVE->value);
+    $this->assertTrue($data['data']['is_active'] === false);
     $this->assertTrue($data['data']['updated_by'] === $this->adminUser->id);
 
 });

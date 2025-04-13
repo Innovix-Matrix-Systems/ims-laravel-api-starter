@@ -26,7 +26,7 @@ it('should returns a error response for not submitting required data', function 
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson('/api/v1/user/profile/update', [
+    ])->patchJson('/api/v1/user/profile/update', [
         'name' => 'test',
     ]);
     $response->assertStatus(422);
@@ -36,7 +36,7 @@ it('should returns a successful response for updating user profile', function ()
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson('/api/v1/user/profile/update', [
+    ])->patchJson('/api/v1/user/profile/update', [
         'name' => 'test',
         'email' => 'test@2test.com',
         'phone' => '1234567890',
