@@ -10,25 +10,8 @@ use Spatie\Permission\Models\Role;
 
 class RolePermissionService
 {
-
     const UNALTERABLE_ROLE_IDS = [1, 2, 3];
-    const UNALTERABLE_PERMISSION_IDS = [1,2,3,4,5,6,7,8,9,10];
-
-    private function isUnalterableRole(int $id): bool
-    {
-        return in_array($id, self::UNALTERABLE_ROLE_IDS);
-    }
-
-    private function checkAndSendUnalterableRoleError(int $id): void
-    {
-        if ($this->isUnalterableRole($id)) {
-            throw new BasicValidationErrorException(
-                Response::HTTP_FORBIDDEN,
-                0,
-                __('http-statuses.403')
-            );
-        }
-    }
+    const UNALTERABLE_PERMISSION_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     public function insertRole(string $name, array $permissions = []): Role
     {
@@ -39,7 +22,7 @@ class RolePermissionService
         try {
             $role->save();
 
-            if (!empty($permissions)) {
+            if (! empty($permissions)) {
                 app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
                 $role->givePermissionTo($permissions);
             }
@@ -48,7 +31,6 @@ class RolePermissionService
             DB::rollback();
             throw $th;
         }
-
 
         return $role->load('permissions');
     }
@@ -71,7 +53,7 @@ class RolePermissionService
         DB::beginTransaction();
         try {
             //unassign all permission from this role
-            if($role->permissions->count() > 0) {
+            if ($role->permissions->count() > 0) {
                 $role->syncPermissions([]);
             }
             //delete role
@@ -85,7 +67,7 @@ class RolePermissionService
 
     public function deletePermission(Permission $permission): void
     {
-        if(in_array($permission->id, self::UNALTERABLE_PERMISSION_IDS)) {
+        if (in_array($permission->id, self::UNALTERABLE_PERMISSION_IDS)) {
             throw new BasicValidationErrorException(
                 Response::HTTP_FORBIDDEN,
                 0,
@@ -94,5 +76,21 @@ class RolePermissionService
         }
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         $permission->delete();
+    }
+
+    private function isUnalterableRole(int $id): bool
+    {
+        return in_array($id, self::UNALTERABLE_ROLE_IDS);
+    }
+
+    private function checkAndSendUnalterableRoleError(int $id): void
+    {
+        if ($this->isUnalterableRole($id)) {
+            throw new BasicValidationErrorException(
+                Response::HTTP_FORBIDDEN,
+                0,
+                __('http-statuses.403')
+            );
+        }
     }
 }

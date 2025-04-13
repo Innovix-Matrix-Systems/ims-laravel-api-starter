@@ -7,9 +7,7 @@ use Illuminate\Validation\Rule;
 
 class RoleInsertUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Determine if the user is authorized to make this request. */
     public function authorize(): bool
     {
         return true;
@@ -23,14 +21,13 @@ class RoleInsertUpdateRequest extends FormRequest
     public function rules(): array
     {
         $validations = [
-            'id'      => 'required|exists:roles,id',
             // 'name'    => 'required|string|max:20|unique:roles,name,'.$this->id.',id',
-            'name'    => Rule::unique('roles', 'name')->ignore((int) $this->id, 'id'),
-            
+            'name' => Rule::unique('roles', 'name')->ignore((int) $this->id, 'id'),
+
             'permissions' => 'nullable|array|min:1',
             'permissions.*' => 'nullable|exists:permissions,id',
         ];
-        if (!$this->id) {
+        if (! $this->id) {
             array_shift($validations);
         }
 

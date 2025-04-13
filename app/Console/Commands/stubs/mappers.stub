@@ -1,0 +1,20 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @extends \App\Http\Mappers\AbstractMapper<Model, mixed>
+ */
+class $CLASS$ extends AbstractMapper
+{
+    public static function toModel($dto, Model $model, array $extra = []): Model
+    {
+        // Implement mapping logic here
+
+        self::fillAuditFields($model, ! $model->exists);
+
+        return $model;
+    }
+}

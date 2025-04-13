@@ -54,9 +54,9 @@ class XSecureSetup extends Command
             $this->info('Generated secret: ' . $secret);
             $this->info('XSECURITY_SECRET key have been updated in the .env file.');
             exit(0);
-        } else {
-            $this->error('Failed to update .env file.');
-            exit(1);
         }
+        $this->error('Failed to update .env file.');
+        exit(1);
+
     }
 }

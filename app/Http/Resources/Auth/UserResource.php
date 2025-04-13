@@ -15,7 +15,7 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $isPermissionLoaded = !$this->whenLoaded('permissions') instanceof MissingValue;
+        $isPermissionLoaded = ! $this->whenLoaded('permissions') instanceof MissingValue;
         $data = [
             ...parent::toArray($request),
             'roles' => $this->whenLoaded('roles') ? $this->getRoleNames() : [],
@@ -23,6 +23,7 @@ class UserResource extends JsonResource
         if ($isPermissionLoaded) {
             $data['permissions'] = PermissionResource::collection($this->getPermissionsViaRoles());
         }
+
         return $data;
     }
 }

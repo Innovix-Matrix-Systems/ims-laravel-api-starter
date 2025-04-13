@@ -12,6 +12,7 @@ class XSecurityMiddleware
     use RateLimitterTrait;
     const MAX_ATTEMPTS = 5;
     const MAX_DECAY_MINUTES = 1;
+
     /**
      * Handle an incoming request.
      *
@@ -19,7 +20,7 @@ class XSecurityMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!config('app.xsecure_enabled')) {
+        if (! config('app.xsecure_enabled')) {
             return $next($request);
         }
         if ($this->limiter()->tooManyAttempts(
@@ -30,7 +31,7 @@ class XSecurityMiddleware
         }
 
         // Check CSRF token validity
-        if (!$this->isValidXSecureToken($request->header('X-SECURITY-TOKEN') ?? '')) {
+        if (! $this->isValidXSecureToken($request->header('X-SECURITY-TOKEN') ?? '')) {
             // Increment failed attempts for the client
             $this->limiter()->hit($this->throttleKey($request), self::MAX_DECAY_MINUTES * 60);
 
@@ -42,13 +43,12 @@ class XSecurityMiddleware
 
         return $next($request);
     }
+
     /**
      * Validate XSECURE token against the shared secret key.
      *
-     * @param  string $token
-     * @return bool
+     * @param string $token
      */
-
     private function isValidXSecureToken(string $signedToken): bool
     {
         $sharedSecretKey = config('app.xsecure_secret');
@@ -58,20 +58,20 @@ class XSecurityMiddleware
             return false;
         }
         // Extract token and signature
-        list($token, $signature) = explode('.', $signedToken);
+        [$token, $signature] = explode('.', $signedToken);
         // Calculate expected signature
         $expectedSignature = hash_hmac('sha256', $token, $sharedSecretKey);
         // Verify signature
-        if (!hash_equals($expectedSignature, $signature)) {
+        if (! hash_equals($expectedSignature, $signature)) {
             return false; // Signature verification failed
         }
         // Parse token payload
         $payload = json_decode(base64_decode($token), true);
         // Validate token expiry
-        if ($payload === null || !isset($payload['expiry'])) {
+        if ($payload === null || ! isset($payload['expiry'])) {
             return false; // Invalid token format or missing expiry
         }
+
         return time() < $payload['expiry']; // Check if token has expired
     }
-
 }

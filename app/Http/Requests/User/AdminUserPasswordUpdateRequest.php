@@ -6,9 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AdminUserPasswordUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Determine if the user is authorized to make this request. */
     public function authorize(): bool
     {
         return true;
@@ -22,7 +20,7 @@ class AdminUserPasswordUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'   => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'password' => 'required|min:6|confirmed',
         ];
     }

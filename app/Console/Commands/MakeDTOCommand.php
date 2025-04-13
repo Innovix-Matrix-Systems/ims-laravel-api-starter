@@ -19,6 +19,7 @@ class MakeDTOCommand extends Command
     /**
      * Name and signiture of Command.
      * name
+     *
      * @var string
      */
     protected $name = 'make:dto';
@@ -26,23 +27,10 @@ class MakeDTOCommand extends Command
     /**
      * command description.
      * description
+     *
      * @var string
      */
     protected $description = 'create a new DTO';
-
-    /**
-     * Get Command argumant EX : HasAuth
-     * getArguments
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['dto', InputArgument::REQUIRED, 'The name of the DTO'],
-        ];
-    }
-
 
     /**
      * __construct
@@ -55,44 +43,11 @@ class MakeDTOCommand extends Command
     }
 
     /**
-     * getDTOName
-     *
-     * @return string
-     */
-    private function getDTOName()
-    {
-        $dto = Str::studly($this->argument('dto'));
-        return $dto;
-    }
-
-    /**
-     * getDestinationFilePath
-     *
-     * @return string
-     */
-    protected function getDestinationFilePath()
-    {
-        return app_path() . "/Http/DTOs" . '/' . $this->getDTOName() . '.php';
-    }
-
-    /**
-     * getDTONameWithoutNamespace
-     *
-     * @return string
-     */
-    private function getDTONameWithoutNamespace()
-    {
-        return class_basename($this->getDTOName());
-    }
-
-    /**
      * getClassNamespace
-     *
-     * @return string
      */
     public function getDefaultNamespace(): string
     {
-        return "App\\Http\\DTOs";
+        return 'App\\Http\\DTOs';
     }
 
     /**
@@ -106,7 +61,6 @@ class MakeDTOCommand extends Command
         return class_basename($this->argument($this->argumentName));
     }
 
-
     /**
      * Generate class namespace dinamacally
      * getClassNamespace
@@ -119,7 +73,7 @@ class MakeDTOCommand extends Command
 
         $extra = str_replace('/', '\\', $extra);
 
-        $namespace =  $this->getDefaultNamespace();
+        $namespace = $this->getDefaultNamespace();
 
         $namespace .= '\\' . $extra;
 
@@ -129,47 +83,13 @@ class MakeDTOCommand extends Command
     }
 
     /**
-     * getStubFilePath
-     *
-     * @return string
-     */
-    protected function getStubFilePath()
-    {
-        $stub = '/stubs/dto.stub';
-        return $stub;
-    }
-
-    /**
-     * getTemplateContents
-     *
-     * @return array|bool|string
-     */
-    protected function getTemplateContents()
-    {
-        $fileTemplate = file_get_contents(__DIR__ . $this->getStubFilePath());
-
-        $replaceOptions = [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace(),
-            'CLASS'             => $this->getDTONameWithoutNamespace()
-        ];
-
-        foreach ($replaceOptions as $search => $replace) {
-            $fileTemplate = str_replace('$' . strtoupper($search) . '$', $replace, $fileTemplate);
-        }
-
-        return $fileTemplate;
-    }
-
-    /**
      * Create view directory if not exists.
-     *
-     * @param $path
      */
     public function createDir($path)
     {
         $dir = dirname($path);
 
-        if (!file_exists($dir)) {
+        if (! file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
     }
@@ -189,12 +109,92 @@ class MakeDTOCommand extends Command
 
         if (File::exists($path)) {
             $this->error("File {$path} already exists!");
+
             return 1;
         }
 
         File::put($path, $fileContents);
         $this->info("DTO generated successfully! path : {$path}");
+
         return 0;
 
+    }
+
+    /**
+     * Get Command argumant EX : HasAuth
+     * getArguments
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['dto', InputArgument::REQUIRED, 'The name of the DTO'],
+        ];
+    }
+
+    /**
+     * getDestinationFilePath
+     *
+     * @return string
+     */
+    protected function getDestinationFilePath()
+    {
+        return app_path() . '/Http/DTOs' . '/' . $this->getDTOName() . '.php';
+    }
+
+    /**
+     * getStubFilePath
+     *
+     * @return string
+     */
+    protected function getStubFilePath()
+    {
+        $stub = '/stubs/dto.stub';
+
+        return $stub;
+    }
+
+    /**
+     * getTemplateContents
+     *
+     * @return array|bool|string
+     */
+    protected function getTemplateContents()
+    {
+        $fileTemplate = file_get_contents(__DIR__ . $this->getStubFilePath());
+
+        $replaceOptions = [
+            'CLASS_NAMESPACE' => $this->getClassNamespace(),
+            'CLASS' => $this->getDTONameWithoutNamespace(),
+        ];
+
+        foreach ($replaceOptions as $search => $replace) {
+            $fileTemplate = str_replace('$' . strtoupper($search) . '$', $replace, $fileTemplate);
+        }
+
+        return $fileTemplate;
+    }
+
+    /**
+     * getDTOName
+     *
+     * @return string
+     */
+    private function getDTOName()
+    {
+        $dto = Str::studly($this->argument('dto'));
+
+        return $dto;
+    }
+
+    /**
+     * getDTONameWithoutNamespace
+     *
+     * @return string
+     */
+    private function getDTONameWithoutNamespace()
+    {
+        return class_basename($this->getDTOName());
     }
 }

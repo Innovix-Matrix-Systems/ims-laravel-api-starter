@@ -31,8 +31,8 @@ class GenerateCrudStarter extends Command
                 [
                     'name' => "Api/V1/{$name}/{$name}Controller",
                     '--api' => true,
-                    '--model' => $name
-                ]
+                    '--model' => $name,
+                ],
             ],
             'request' => ['make:request', ['name' => "{$name}/{$name}InsertUpdateRequest"]],
             'resource' => ['make:resource', ['name' => "{$name}/{$name}Resource"]],
@@ -66,9 +66,11 @@ class GenerateCrudStarter extends Command
         try {
             $exitCode = Artisan::call($command, $arguments);
             $this->line(Artisan::output());
+
             return $exitCode !== 0;
         } catch (\Exception $e) {
             $this->error("Error creating {$taskName}: {$e->getMessage()}");
+
             return true;
         }
     }

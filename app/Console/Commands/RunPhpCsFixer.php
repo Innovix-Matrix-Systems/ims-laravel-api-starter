@@ -31,9 +31,7 @@ class RunPhpCsFixer extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     */
+    /** Execute the console command. */
     public function handle()
     {
         //
@@ -54,10 +52,10 @@ class RunPhpCsFixer extends Command
         if ($process->isSuccessful()) {
             $this->info('PHP CS Fixer has run successfully.');
             exit(0);
-        } else {
-            $this->error('An error occurred while running PHP CS Fixer.');
-            $this->line($process->getErrorOutput());
-            exit(1);
         }
+        $this->error('An error occurred while running PHP CS Fixer.');
+        $this->line($process->getErrorOutput());
+        exit(1);
+
     }
 }

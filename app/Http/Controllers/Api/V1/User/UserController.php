@@ -29,9 +29,8 @@ class UserController extends Controller
         protected UserService $userService,
     ) {
     }
-    /**
-     * Display a listing of the resource.
-     */
+
+    /** Display a listing of the resource. */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', User::class);
@@ -54,15 +53,13 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    /** Store a newly created resource in storage. */
     public function store(UserInsertUpdateRequest $request)
     {
         Gate::authorize('create', User::class);
         $roles = Role::whereIn('id', $request->roles)
-        ->where('id', '!=', UserRoleID::SUPER_ADMIN_ID)
-        ->get();
+            ->where('id', '!=', UserRoleID::SUPER_ADMIN_ID)
+            ->get();
         $data = new UserDTO(
             null,
             $request->first_name,
@@ -85,13 +82,12 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
+    /** Display the specified resource. */
     public function show(string $id)
     {
         $user = User::findOrFail($id)->load('roles');
         Gate::authorize('view', $user);
+
         return $this->sendSuccessCollectionResponse(
             UserResource::make($user),
             __('http-statuses.200'),
@@ -100,9 +96,7 @@ class UserController extends Controller
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    /** Update the specified resource in storage. */
     public function update(UserInsertUpdateRequest $request)
     {
         $user = User::findOrFail($request->id);
@@ -131,14 +125,13 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    /** Remove the specified resource from storage. */
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
         Gate::authorize('delete', $user);
         $user->delete();
+
         return $this->sendSuccessResponse(
             [],
             __('messages.delete.success'),
@@ -147,16 +140,14 @@ class UserController extends Controller
 
     }
 
-    /**
-     * assign role to specified user
-     */
+    /** assign role to specified user */
     public function assignRole(AdminAssignUserRoleRequest $request)
     {
         $user = User::findOrFail($request->user_id)->load('roles');
         Gate::authorize('assignRole', $user);
         $roles = Role::whereIn('id', $request->roles)
-        ->where('id', '!=', UserRoleID::SUPER_ADMIN_ID)
-        ->get();
+            ->where('id', '!=', UserRoleID::SUPER_ADMIN_ID)
+            ->get();
         $updatedUser = $this->userService->assignUserRole($user, $roles);
 
         return $this->sendSuccessCollectionResponse(
@@ -166,9 +157,7 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Update password of specified user
-     */
+    /** Update password of specified user */
     public function changePassword(AdminUserPasswordUpdateRequest $request)
     {
         $user = User::findOrFail($request->user_id);
@@ -182,9 +171,7 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Update authenticated user profile information
-     */
+    /** Update authenticated user profile information */
     public function updateProfile(UserProfileUpdateRequest $request)
     {
         $user = User::findOrFail(auth()->id())->load('roles');
@@ -203,6 +190,7 @@ class UserController extends Controller
             null
         );
         $updatedUser = $this->userService->updateUserData($data, $user, true);
+
         return $this->sendSuccessCollectionResponse(
             UserResource::make($updatedUser),
             __('http-statuses.200'),
@@ -210,9 +198,7 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Update authenticated user profile password
-     */
+    /** Update authenticated user profile password */
     public function changeProfilePassword(UserPasswordUpdateRequest $request)
     {
         $user = User::findOrFail(auth()->id())->load('roles');
@@ -222,6 +208,7 @@ class UserController extends Controller
             $request->password,
             $request->current_password
         );
+
         return $this->sendSuccessCollectionResponse(
             UserResource::make($updatedUser),
             __('http-statuses.200'),

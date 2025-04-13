@@ -9,10 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$userService;
-$adminUser;
-$superAdminUser;
-
 beforeEach(function () {
     $this->userService = new UserService();
     $this->adminUser = generateAdmin();
@@ -40,10 +36,9 @@ it('should create a User', function () {
     expect(User::where('name', 'test name')->exists())->toBeTrue();
     expect($user->email)->toBe('test@test.com');
     expect($user->phone)->toBe('012378723200');
-    expect($user->is_active)->toBe(UserStatus::ACTIVE);
+    expect($user->is_active)->toBe(true);
     expect($user->roles()->pluck('name')->toArray())->toContain(UserRole::USER->value);
 });
-
 
 it('should update a user', function () {
     $userData = new UserDTO(
@@ -81,7 +76,7 @@ it('should update a user', function () {
     expect($updatedUser->email)->toBe('test@2test.com');
     expect($updatedUser->phone)->toBe('012872320010');
     expect($updatedUser->address)->toBe('test addresss update');
-    expect($updatedUser->is_active)->toBe(UserStatus::DEACTIVE);
+    expect($updatedUser->is_active)->toBe(false);
 });
 
 it('should delete a user', function () {
@@ -118,7 +113,7 @@ it('should assign a role to a user', function () {
         [UserRole::USER]
     );
     $user = $this->userService->insertUserData($userData);
-    $this->userService->assignUserRole($user, [2,3]);
+    $this->userService->assignUserRole($user, [2, 3]);
     expect($user->roles()->pluck('name')->toArray())->toContain(UserRole::ADMIN->value);
 });
 

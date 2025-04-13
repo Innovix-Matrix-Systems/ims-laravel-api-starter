@@ -9,9 +9,8 @@ use Spatie\Permission\Models\Permission;
 class PermissionSeeder extends Seeder
 {
     use RolePermissionTrait;
-    /**
-     * Run the database seeds.
-     */
+
+    /** Run the database seeds. */
     public function run(): void
     {
         $permissions = [

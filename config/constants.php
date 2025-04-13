@@ -1,5 +1,5 @@
 <?php
 
 return [
-   'GUARD_NAME'   => 'sanctum',
+    'GUARD_NAME' => 'sanctum',
 ];

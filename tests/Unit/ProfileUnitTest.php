@@ -7,10 +7,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$userService;
-$testUser;
-$superAdminUser;
-
 beforeEach(function () {
     $this->userService = new UserService();
     $this->testUser = generateUser();

@@ -6,9 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UserProfileUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Determine if the user is authorized to make this request. */
     public function authorize(): bool
     {
         return auth()->check();
@@ -22,13 +20,13 @@ class UserProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'    => 'nullable|string|max:255',
-            'last_name'     => 'nullable|string|max:255',
-            'name'          => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users,email,'.auth()->user()->id.',id',
-            'phone'         => 'nullable|numeric|unique:users,phone,'.auth()->user() ->id.',id',
-            'designation'   => 'nullable|string|max:255',
-            'address'       => 'nullable|string|max:255',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->user()->id . ',id',
+            'phone' => 'nullable|numeric|unique:users,phone,' . auth()->user()->id . ',id',
+            'designation' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
         ];
     }
 }

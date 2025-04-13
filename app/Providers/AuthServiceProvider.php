@@ -25,9 +25,7 @@ class AuthServiceProvider extends ServiceProvider
         Permission::class => PermissionPolicy::class,
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
+    /** Register any authentication / authorization services. */
     public function boot(): void
     {
         //
