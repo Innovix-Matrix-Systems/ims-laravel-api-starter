@@ -23,13 +23,13 @@ class PermissionController extends Controller
         protected RolePermissionService $rolePermissionService,
     ) {
     }
-    /**
-     * Display a listing of the resource.
-     */
+
+    /** Display a listing of the resource. */
     public function index()
     {
         // Gate::authorize('viewAny', Permission::class);
         $permissions = Permission::all();
+
         return $this->sendSuccessCollectionResponse(
             PermissionResource::collection($permissions),
             __('http-statuses.200'),
@@ -37,23 +37,20 @@ class PermissionController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    /** Show the form for creating a new resource. */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    /** Store a newly created resource in storage. */
     public function store(PermissionInsertRequest $request)
     {
         Gate::authorize('create', Permission::class);
         $permission = new Permission();
         $permission->name = $request->name;
         $permission->save();
+
         return $this->sendSuccessResponse(
             PermissionResource::make($permission),
             __('http-statuses.201'),
@@ -61,38 +58,31 @@ class PermissionController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
+    /** Display the specified resource. */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    /** Show the form for editing the specified resource. */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    /** Update the specified resource in storage. */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    /** Remove the specified resource from storage. */
     public function destroy(string $id)
     {
         $permission = Permission::findOrFail($id);
         Gate::authorize('delete', $permission);
         $this->rolePermissionService->deletePermission($permission);
+
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

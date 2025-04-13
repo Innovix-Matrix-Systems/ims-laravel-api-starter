@@ -39,100 +39,27 @@ class AuthService
     }
 
     /**
-     * Verify the user before Attempting to log the user into the application.
-     *
-     * @param  \App\Models\User $user
-     * @return string           error code
-     */
-    protected function verifyBeforeLogin(User $user)
-    {
-        if ($user->is_active == UserStatus::DEACTIVE->value) {
-            return self::AUTH_ERROR_DEACTIVE;
-        }
-        if (!$user->email_verified_at) {
-            return self::AUTH_ERROR_UNVERIFIED;
-        }
-
-        return self::AUTH_SUCCESS_CODE;
-    }
-
-    /**
      * check if the provided password is matched with the user current password
      *
-     * @param  \App\Models\User $user
-     * @param  string           $password
-     * @return boolean
+     * @param  string $password
+     * @return bool
      */
     public function isUserPasswordMatched(User $user, $password)
     {
-        if (Hash::check($password, $user->password)) {
-            return true;
-        }
-        return false;
+        return (bool) (Hash::check($password, $user->password));
     }
 
-    /**
-     * The user has been authenticated.
-     *
-     * @param  \App\Models\User $user
-     * @param  string           $device
-     * @return void
-     */
-    protected function authenticated(User $user, $device)
-    {
-        $user->last_login_at = now();
-        $user->last_active_device = $device;
-        $user->save();
-    }
-
-    /**
-     * Clear the login locks for the given user credentials.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return void
-     */
-    protected function clearLoginAttempts(Request $request)
-    {
-        $this->limiter()->clear($this->throttleKey($request));
-    }
-
-    /**
-     * Determine if the user has too many failed login attempts.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return bool
-     */
-    protected function hasTooManyLoginAttempts(Request $request)
-    {
-        return $this->limiter()->tooManyAttempts(
-            $this->throttleKey($request),
-            self::MAX_LOGIN_ATTEMPTS
-        );
-    }
-
-    /**
-     * Increment the login attempts for the user.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return void
-     */
-    protected function incrementLoginAttempts(Request $request)
-    {
-        $this->limiter()->hit(
-            $this->throttleKey($request),
-            self::MAX_DECAY_MINUTES * 60
-        );
-    }
     /**
      * Log the user into the application
      *
-     * @param  \App\Models\User $user
-     * @param  string           $password
-     * @param  string           $device
-     * @return array
+     * @param string $password
+     * @param string $device
+     *
      * @throws \App\Exceptions\Auth\LoginErrorException;
+     *
+     * @return array
      */
-    public function login(User $user, $password, $device = "")
+    public function login(User $user, $password, $device = '')
     {
         if ($this->hasTooManyLoginAttempts(request())) {
             $this->fireLockoutEvent(request());
@@ -151,7 +78,7 @@ class AuthService
             $this->sendFailedLoginResponse(self::AUTH_ERROR_UNVERIFIED);
         }
 
-        if (!$this->isUserPasswordMatched($user, $password)) {
+        if (! $this->isUserPasswordMatched($user, $password)) {
             //send failed login response
             $this->incrementLoginAttempts(request());
             $this->sendFailedLoginResponse(self::AUTH_ERROR_INCORRECT_PASSWORD);
@@ -163,7 +90,7 @@ class AuthService
             $this->authenticated($user, $device);
 
             return [
-                'user'  => $user,
+                'user' => $user,
                 'token' => $token,
             ];
 
@@ -188,15 +115,69 @@ class AuthService
     }
 
     /**
-     * generate auth token key for a user
+     * Verify the user before Attempting to log the user into the application.
      *
-     * @param  string $userId
-     * @param  string $device
-     * @return string
+     * @return string error code
      */
-    private function generateTokenKey($userId, $device)
+    protected function verifyBeforeLogin(User $user)
     {
-        return self::USER_TOKEN_PREFIX . $userId . '_' . $device;
+        if ($user->is_active == UserStatus::DEACTIVE->value) {
+            return self::AUTH_ERROR_DEACTIVE;
+        }
+        if (! $user->email_verified_at) {
+            return self::AUTH_ERROR_UNVERIFIED;
+        }
+
+        return self::AUTH_SUCCESS_CODE;
+    }
+
+    /**
+     * The user has been authenticated.
+     *
+     * @param  string $device
+     * @return void
+     */
+    protected function authenticated(User $user, $device)
+    {
+        $user->last_login_at = now();
+        $user->last_active_device = $device;
+        $user->save();
+    }
+
+    /**
+     * Clear the login locks for the given user credentials.
+     *
+     * @return void
+     */
+    protected function clearLoginAttempts(Request $request)
+    {
+        $this->limiter()->clear($this->throttleKey($request));
+    }
+
+    /**
+     * Determine if the user has too many failed login attempts.
+     *
+     * @return bool
+     */
+    protected function hasTooManyLoginAttempts(Request $request)
+    {
+        return $this->limiter()->tooManyAttempts(
+            $this->throttleKey($request),
+            self::MAX_LOGIN_ATTEMPTS
+        );
+    }
+
+    /**
+     * Increment the login attempts for the user.
+     *
+     * @return void
+     */
+    protected function incrementLoginAttempts(Request $request)
+    {
+        $this->limiter()->hit(
+            $this->throttleKey($request),
+            self::MAX_DECAY_MINUTES * 60
+        );
     }
 
     /**
@@ -215,7 +196,7 @@ class AuthService
 
     /**
      * send Failed login response
-     * @param int $authErrorCode
+     *
      * @throws \App\Exceptions\Auth\LoginErrorException;
      */
     protected function sendFailedLoginResponse(int $authErrorCode)
@@ -244,5 +225,17 @@ class AuthService
             $errorCode,
             $errorMessage,
         );
+    }
+
+    /**
+     * generate auth token key for a user
+     *
+     * @param  string $userId
+     * @param  string $device
+     * @return string
+     */
+    private function generateTokenKey($userId, $device)
+    {
+        return self::USER_TOKEN_PREFIX . $userId . '_' . $device;
     }
 }

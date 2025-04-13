@@ -12,43 +12,22 @@ use Illuminate\Support\Facades\Storage;
 
 class AppHealthService
 {
-    /**
-     * @var Migrator
-     */
+    /** @var Migrator */
     protected $migrator;
 
     /**
-     * @return Migrator
-     */
-    protected function getMigrator()
-    {
-        if (is_null($this->migrator)) {
-            $this->migrator = app('migrator');
-        }
-
-        return $this->migrator;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getMigrationPath()
-    {
-        return database_path() . DIRECTORY_SEPARATOR . 'migrations';
-    }
-
-    /**
      * Test cache is operational or not
+     *
      * @name isCacheTestSuccessful
      *
-     * @return boolean
+     * @return bool
      */
     public function isCacheTestSuccessful()
     {
         $isHealthy = true;
         try {
             //code...
-            $cache = Cache::store(config("cache.default"));
+            $cache = Cache::store(config('cache.default'));
             $cache->put('laravel-health-check', 'healthy', Carbon::now()->addMinutes(1));
             $value = $cache->pull('laravel-health-check', 'broken');
             if ($value != 'healthy') {
@@ -58,14 +37,16 @@ class AppHealthService
             //throw $th;
             $isHealthy = false;
         }
+
         return $isHealthy;
     }
 
     /**
      * Test http request is operational or not
+     *
      * @name isHttpTestSuccessful
      *
-     * @return boolean
+     * @return bool
      */
     public function isHttpTestSuccessful()
     {
@@ -78,21 +59,23 @@ class AppHealthService
             //throw $th;
             $isHealthy = false;
         }
+
         return $isHealthy;
     }
 
     /**
      * Test storage and its permission is operational or not
+     *
      * @name isStorageTestSuccessful
      *
-     * @return boolean
+     * @return bool
      */
     public function isStorageTestSuccessful()
     {
         $isHealthy = true;
         $uniqueString = uniqid('laravel-health-check_', true);
         try {
-            $storage = Storage::disk("health");
+            $storage = Storage::disk('health');
             $storage->put($uniqueString, $uniqueString);
             $contents = $storage->get($uniqueString);
             $storage->delete($uniqueString);
@@ -100,15 +83,17 @@ class AppHealthService
             // throw $th;
             $isHealthy = false;
         }
+
         return $isHealthy;
     }
 
     /**
-    * Test Database connection is successful or not
-    * @name isDatabaseTestSuccessful
-    *
-     * @return boolean
-    */
+     * Test Database connection is successful or not
+     *
+     * @name isDatabaseTestSuccessful
+     *
+     * @return bool
+     */
     public function isDatabaseTestSuccessful()
     {
         $isHealthy = true;
@@ -117,21 +102,23 @@ class AppHealthService
         } catch (\Throwable $th) {
             $isHealthy = false;
         }
+
         return $isHealthy;
     }
 
     /**
      * Test Migration is up-todate or not
+     *
      * @name isMigrationTestSuccessful
      *
-     * @return boolean
+     * @return bool
      */
     public function isMigrationTestSuccessful()
     {
         $isHealthy = true;
         try {
             //code...
-            $pendingMigrations = (array)$this->getPendingMigrations();
+            $pendingMigrations = (array) $this->getPendingMigrations();
             $isHealthy = count($pendingMigrations) === 0;
         } catch (\Throwable $th) {
             //throw $th;
@@ -141,9 +128,25 @@ class AppHealthService
         return $isHealthy;
     }
 
+    /** @return Migrator */
+    protected function getMigrator()
+    {
+        if (is_null($this->migrator)) {
+            $this->migrator = app('migrator');
+        }
+
+        return $this->migrator;
+    }
+
+    /** @return string */
+    protected function getMigrationPath()
+    {
+        return database_path() . DIRECTORY_SEPARATOR . 'migrations';
+    }
+
     private function getCompletedMigrations()
     {
-        if (!$this->getMigrator()->repositoryExists()) {
+        if (! $this->getMigrator()->repositoryExists()) {
             return [];
         }
 
@@ -153,6 +156,7 @@ class AppHealthService
     private function getPendingMigrations()
     {
         $files = $this->getMigrator()->getMigrationFiles($this->getMigrationPath());
+
         return array_diff(array_keys($files), $this->getCompletedMigrations());
     }
 }

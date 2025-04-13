@@ -9,10 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$userService;
-$adminUser;
-$superAdminUser;
-
 beforeEach(function () {
     $this->userService = new UserService();
     $this->adminUser = generateAdmin();
@@ -43,7 +39,6 @@ it('should create a User', function () {
     expect($user->is_active)->toBe(UserStatus::ACTIVE);
     expect($user->roles()->pluck('name')->toArray())->toContain(UserRole::USER->value);
 });
-
 
 it('should update a user', function () {
     $userData = new UserDTO(
@@ -118,7 +113,7 @@ it('should assign a role to a user', function () {
         [UserRole::USER]
     );
     $user = $this->userService->insertUserData($userData);
-    $this->userService->assignUserRole($user, [2,3]);
+    $this->userService->assignUserRole($user, [2, 3]);
     expect($user->roles()->pluck('name')->toArray())->toContain(UserRole::ADMIN->value);
 });
 

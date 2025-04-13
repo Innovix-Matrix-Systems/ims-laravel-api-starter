@@ -10,10 +10,10 @@ use Illuminate\Http\Response;
 class HealthController extends Controller
 {
     /**
-      * __construct
-      *
-       * @return void
-      */
+     * __construct
+     *
+     * @return void
+     */
     public function __construct(
         protected AppHealthService $appHealthService,
     ) {
@@ -23,12 +23,13 @@ class HealthController extends Controller
     {
 
         $data = [
-            "cache" => $this->appHealthService->isCacheTestSuccessful(),
-            "http" => $this->appHealthService->isHttpTestSuccessful(),
-            "storage" => $this->appHealthService->isStorageTestSuccessful(),
-            "database" => $this->appHealthService->isDatabaseTestSuccessful(),
-            "migration" => $this->appHealthService->isMigrationTestSuccessful(),
+            'cache' => $this->appHealthService->isCacheTestSuccessful(),
+            'http' => $this->appHealthService->isHttpTestSuccessful(),
+            'storage' => $this->appHealthService->isStorageTestSuccessful(),
+            'database' => $this->appHealthService->isDatabaseTestSuccessful(),
+            'migration' => $this->appHealthService->isMigrationTestSuccessful(),
         ];
+
         return response($data, Response::HTTP_OK);
     }
 }

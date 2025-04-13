@@ -12,23 +12,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-
     /**
      * The current Faker instance.
      *
      * @var \Faker\Generator
      */
     protected $faker;
-
-    /**
-     * Get a new Faker instance.
-     *
-     * @return \Faker\Generator
-     */
-    protected function withFaker()
-    {
-        return Container::getInstance()->make(Generator::class);
-    }
 
     /**
      * Create a new seeder instance.
@@ -40,15 +29,13 @@ class UserSeeder extends Seeder
         $this->faker = $this->withFaker();
     }
 
-    /**
-     * Run the database seeds.
-     */
+    /** Run the database seeds. */
     public function run(): void
     {
 
         //superadmin
         $superAdmin = new User();
-        $superAdmin->name = $this->faker->firstName. ' '. $this->faker->lastName;
+        $superAdmin->name = $this->faker->firstName . ' ' . $this->faker->lastName;
         $superAdmin->user_name = 'super.admin';
         $superAdmin->email = 'superadmin@ims.com';
         $superAdmin->email_verified_at = now();
@@ -60,5 +47,15 @@ class UserSeeder extends Seeder
         $superAdmin->save();
 
         $superAdmin->assignRole(UserRole::SUPER_ADMIN);
+    }
+
+    /**
+     * Get a new Faker instance.
+     *
+     * @return \Faker\Generator
+     */
+    protected function withFaker()
+    {
+        return Container::getInstance()->make(Generator::class);
     }
 }

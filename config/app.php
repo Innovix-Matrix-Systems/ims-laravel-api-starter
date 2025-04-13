@@ -138,9 +138,9 @@ return [
     |
     */
 
-    'xsecure_enabled'   => (bool) env('XSECURITY_ENABLED', false),
-    'xsecure_secret'    => env('XSECURITY_SECRET'),
-    'xsecure_token'     => env('XSECURITY_TOKEN'),
+    'xsecure_enabled' => (bool) env('XSECURITY_ENABLED', false),
+    'xsecure_secret' => env('XSECURITY_SECRET'),
+    'xsecure_token' => env('XSECURITY_TOKEN'),
 
     /*
     |--------------------------------------------------------------------------

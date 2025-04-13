@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "164d39b6-556a-4626-bbd4-25a5f1546520",
-		"name": "ims-api-starter",
+		"name": "ims-laravel-api-starter",
 		"description": "# IMS-API-STARTER API Documentation\n\n## Introduction\n\nProvide a brief introduction to the ims-api-starter API.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29444436",
@@ -51,6 +51,9 @@
 						{
 							"name": "Login",
 							"request": {
+								"auth": {
+									"type": "noauth"
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -63,24 +66,13 @@
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "email",
-											"value": "superadmin@ims.com",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "123456",
-											"type": "text"
-										},
-										{
-											"key": "device",
-											"value": "Redmi Note 11",
-											"type": "text"
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"superadmin@ims.com\",\r\n    \"password\": \"123456\",\r\n    \"device\": \"samsung\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
 										}
-									]
+									}
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/login",
@@ -303,7 +295,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"Test Role 8\",\r\n    \"permissions\": [\r\n        1,2,3\r\n    ]\r\n}",
+									"raw": "{\r\n    \"name\": \"Test Role 9\",\r\n    \"permissions\": [\r\n        1,2,3\r\n    ]\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -337,7 +329,7 @@
 										}
 									]
 								},
-								"method": "POST",
+								"method": "PATCH",
 								"header": [
 									{
 										"key": "Accept",
@@ -349,22 +341,16 @@
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "id",
-											"value": "4",
-											"type": "text"
-										},
-										{
-											"key": "name",
-											"value": "sdasadsdad",
-											"type": "text"
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Role Update\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
 										}
-									]
+									}
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/role/update",
+									"raw": "{{base_url}}/api/v1/role/:id",
 									"host": [
 										"{{base_url}}"
 									],
@@ -372,7 +358,13 @@
 										"api",
 										"v1",
 										"role",
-										"update"
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
 									]
 								}
 							},
@@ -826,7 +818,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"first_name\": \"John\",\r\n    \"last_name\": \"Doe\",\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john54451.doe@example.com\",\r\n    \"password\": \"password123\",\r\n    \"password_confirmation\": \"password123\",\r\n    \"phone\": \"15134517590\",\r\n    \"designation\": \"Software Engineer\",\r\n    \"address\": \"123 Main Street, City, Country\",\r\n    \"roles\": [2,3]\r\n}",
+							"raw": "{\r\n    \"first_name\": \"John\",\r\n    \"last_name\": \"Doe\",\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john12.doe2@example.com\",\r\n    \"password\": \"password123\",\r\n    \"password_confirmation\": \"password123\",\r\n    \"phone\": \"154517550\",\r\n    \"designation\": \"Software Engineer\",\r\n    \"address\": \"123 Main Street, City, Country\",\r\n    \"roles\": [2,3]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1063,7 +1055,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Accept",
@@ -1072,7 +1064,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 10,\r\n    \"first_name\": \"John\",\r\n    \"last_name\": \"Doe\",\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"phone\": \"1345677890\",\r\n    \"designation\": \"Software Engineer 2\",\r\n    \"address\": \"123 Main Street, City, Country\",\r\n    \"is_active\": 1\r\n}",
+							"raw": "{\r\n    \"first_name\": \"John\",\r\n    \"last_name\": \"Doe\",\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"john.doe22@example.com\",\r\n    \"phone\": \"1345677822\",\r\n    \"designation\": \"Software Engineer 2\",\r\n    \"address\": \"123 Main Street, City, Country\",\r\n    \"is_active\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1080,7 +1072,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/user/update",
+							"raw": "{{base_url}}/api/v1/user/:id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1088,7 +1080,13 @@
 								"api",
 								"v1",
 								"user",
-								"update"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6"
+								}
 							]
 						}
 					},
@@ -1319,7 +1317,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Accept",

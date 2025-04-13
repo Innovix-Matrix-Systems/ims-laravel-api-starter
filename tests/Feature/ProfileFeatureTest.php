@@ -4,15 +4,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$testUser;
-$authToken;
-
 beforeEach(function () {
     $authData = generateUserAndAuthToken();
     $this->testUser = $authData['user'];
     $this->authToken = $authData['token'];
 });
-
 
 it('should returns a successful response for viewing profile', function () {
     $userId = $this->testUser->id;
@@ -30,7 +26,7 @@ it('should returns a error response for not submitting required data', function 
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson("/api/v1/user/profile/update", [
+    ])->postJson('/api/v1/user/profile/update', [
         'name' => 'test',
     ]);
     $response->assertStatus(422);
@@ -40,7 +36,7 @@ it('should returns a successful response for updating user profile', function ()
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson("/api/v1/user/profile/update", [
+    ])->postJson('/api/v1/user/profile/update', [
         'name' => 'test',
         'email' => 'test@2test.com',
         'phone' => '1234567890',
@@ -61,7 +57,7 @@ it('should returns a successful response after updating user password', function
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson("/api/v1/user/profile/change-password", [
+    ])->postJson('/api/v1/user/profile/change-password', [
         'current_password' => '123456',
         'password' => 'password',
         'password_confirmation' => 'password',

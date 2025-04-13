@@ -16,23 +16,110 @@ class MakeServiceCommand extends Command
      */
     public $argumentName = 'service';
 
-
     /**
      * Name and signiture of Command.
      * name
+     *
      * @var string
      */
     protected $name = 'make:service';
 
-
     /**
      * command description.
      * description
+     *
      * @var string
      */
     protected $description = 'create a new service class';
 
+    /**
+     * __construct
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
+    /**
+     * Set Default Namespace
+     * Override CommandGenerator class method
+     * getDefaultNamespace
+     */
+    public function getDefaultNamespace(): string
+    {
+        return 'App\\Http\\Services';
+    }
+
+    /**
+     * Return a vaid class name
+     * getClass
+     *
+     * @return string
+     */
+    public function getClass()
+    {
+        return class_basename($this->argument($this->argumentName));
+    }
+
+    /**
+     * Generate class namespace dinamacally
+     * getClassNamespace
+     *
+     * @return string
+     */
+    public function getClassNamespace()
+    {
+        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+
+        $extra = str_replace('/', '\\', $extra);
+
+        $namespace = $this->getDefaultNamespace();
+
+        $namespace .= '\\' . $extra;
+
+        $namespace = str_replace('/', '\\', $namespace);
+
+        return trim($namespace, '\\');
+    }
+
+    /**
+     * Create view directory if not exists.
+     */
+    public function createDir($path)
+    {
+        $dir = dirname($path);
+
+        if (! file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $path = str_replace('\\', '/', $this->getDestinationFilePath());
+
+        $fileContents = $this->getTemplateContents();
+
+        $this->createDir($path);
+
+        if (File::exists($path)) {
+            $this->error("File {$path} already exists!");
+
+            return 1;
+        }
+
+        File::put($path, $fileContents);
+        $this->info("Service generated successfully! path : {$path}");
+
+        return 0;
+    }
 
     /**
      * Get command agrumants - EX : UserService
@@ -47,35 +134,6 @@ class MakeServiceCommand extends Command
         ];
     }
 
-
-    /**
-     * __construct
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-
-    /**
-     * Return Service name as convention
-     * getServiceName
-     *
-     * @return string
-     */
-    private function getServiceName()
-    {
-        $service = Str::studly($this->argument('service'));
-
-        if (Str::contains(strtolower($service), 'service') === false) {
-            $service .= 'Service';
-        }
-
-        return $service;
-    }
-
     /**
      * Return destination path for class file publish
      * getDestinationFilePath
@@ -84,66 +142,8 @@ class MakeServiceCommand extends Command
      */
     protected function getDestinationFilePath()
     {
-        return app_path() . "/Http/Services" . '/' . $this->getServiceName() . '.php';
+        return app_path() . '/Http/Services' . '/' . $this->getServiceName() . '.php';
     }
-
-
-    /**
-     * Return only service class name
-     * getServiceNameWithoutNamespace
-     *
-     * @return string
-     */
-    private function getServiceNameWithoutNamespace()
-    {
-        return class_basename($this->getServiceName());
-    }
-
-    /**
-     * Set Default Namespace
-     * Override CommandGenerator class method
-     * getDefaultNamespace
-     *
-     * @return string
-     */
-    public function getDefaultNamespace(): string
-    {
-        return "App\\Http\\Services";
-    }
-
-    /**
-    * Return a vaid class name
-    * getClass
-    *
-     * @return string
-    */
-    public function getClass()
-    {
-        return class_basename($this->argument($this->argumentName));
-    }
-
-
-    /**
-     * Generate class namespace dinamacally
-     * getClassNamespace
-     *
-     * @return string
-     */
-    public function getClassNamespace()
-    {
-        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
-
-        $extra = str_replace('/', '\\', $extra);
-
-        $namespace =  $this->getDefaultNamespace();
-
-        $namespace .= '\\' . $extra;
-
-        $namespace = str_replace('/', '\\', $namespace);
-
-        return trim($namespace, '\\');
-    }
-
 
     /**
      * Return stub file path
@@ -168,8 +168,8 @@ class MakeServiceCommand extends Command
         $fileTemplate = file_get_contents(__DIR__ . $this->getStubFilePath());
 
         $replaceOptions = [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace(),
-            'CLASS'             => $this->getServiceNameWithoutNamespace()
+            'CLASS_NAMESPACE' => $this->getClassNamespace(),
+            'CLASS' => $this->getServiceNameWithoutNamespace(),
         ];
 
         foreach ($replaceOptions as $search => $replace) {
@@ -180,39 +180,30 @@ class MakeServiceCommand extends Command
     }
 
     /**
-     * Create view directory if not exists.
+     * Return Service name as convention
+     * getServiceName
      *
-     * @param $path
+     * @return string
      */
-    public function createDir($path)
+    private function getServiceName()
     {
-        $dir = dirname($path);
+        $service = Str::studly($this->argument('service'));
 
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
+        if (Str::contains(strtolower($service), 'service') === false) {
+            $service .= 'Service';
         }
+
+        return $service;
     }
 
     /**
-     * Execute the console command.
+     * Return only service class name
+     * getServiceNameWithoutNamespace
      *
-     * @return int
+     * @return string
      */
-    public function handle()
+    private function getServiceNameWithoutNamespace()
     {
-        $path = str_replace('\\', '/', $this->getDestinationFilePath());
-
-        $fileContents = $this->getTemplateContents();
-
-        $this->createDir($path);
-
-        if (File::exists($path)) {
-            $this->error("File {$path} already exists!");
-            return 1;
-        }
-
-        File::put($path, $fileContents);
-        $this->info("Service generated successfully! path : {$path}");
-        return 0;
+        return class_basename($this->getServiceName());
     }
 }

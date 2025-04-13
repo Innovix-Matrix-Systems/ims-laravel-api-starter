@@ -16,9 +16,10 @@ class LanguageMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->header('Accept-Language', config('app.locale'));
+        $locale = explode(',', $request->header('Accept-Language'))[0] ?? config('app.locale');
         app()->setLocale($locale);
         Carbon::setLocale($locale);
+
         return $next($request);
     }
 }

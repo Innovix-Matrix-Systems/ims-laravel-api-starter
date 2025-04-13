@@ -25,13 +25,12 @@ class RoleController extends Controller
     ) {
     }
 
-    /**
-     * Display a listing of the resource.
-     */
+    /** Display a listing of the resource. */
     public function index()
     {
         Gate::authorize('viewAny', Role::class);
         $roles = Role::all();
+
         return $this->sendSuccessCollectionResponse(
             RoleResource::collection($roles),
             __('http-statuses.200'),
@@ -39,17 +38,13 @@ class RoleController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    /** Show the form for creating a new resource. */
     public function create(Request $request)
     {
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    /** Store a newly created resource in storage. */
     public function store(RoleInsertUpdateRequest $request)
     {
         Gate::authorize('create', Role::class);
@@ -57,6 +52,7 @@ class RoleController extends Controller
             $request->name,
             $request->permissions ?? []
         );
+
         return $this->sendSuccessResponse(
             RoleResource::make($role),
             __('http-statuses.201'),
@@ -64,14 +60,13 @@ class RoleController extends Controller
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
+    /** Display the specified resource. */
     public function show(string $id)
     {
 
         $role = Role::findOrFail($id)->load('permissions');
         Gate::authorize('view', $role);
+
         return $this->sendSuccessResponse(
             RoleResource::make($role),
             __('http-statuses.200'),
@@ -79,23 +74,20 @@ class RoleController extends Controller
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    /** Show the form for editing the specified resource. */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    /** Update the specified resource in storage. */
     public function update(RoleInsertUpdateRequest $request)
     {
         $role = Role::findOrFail($request->id);
         Gate::authorize('update', $role);
         $name = $request->name;
         $updatedRole = $this->rolePermissionService->updateRole($role, $name);
+
         return $this->sendSuccessResponse(
             RoleResource::make($updatedRole),
             __('http-statuses.200'),
@@ -103,14 +95,13 @@ class RoleController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    /** Remove the specified resource from storage. */
     public function destroy(string $id)
     {
         $role = Role::with('permissions')->findOrFail($id);
         Gate::authorize('delete', $role);
         $this->rolePermissionService->deleteRole($role);
+
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
@@ -119,6 +110,7 @@ class RoleController extends Controller
         Gate::authorize('create', Role::class);
         $role = Role::findOrFail($request->id);
         $role->syncPermissions($request->permissions);
+
         return $this->sendSuccessResponse(
             RoleResource::make($role->load('permissions')),
             __('http-statuses.200'),

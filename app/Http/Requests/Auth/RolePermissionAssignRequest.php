@@ -6,9 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class RolePermissionAssignRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Determine if the user is authorized to make this request. */
     public function authorize(): bool
     {
         return true;
@@ -22,7 +20,7 @@ class RolePermissionAssignRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'      => 'required|exists:roles,id',
+            'id' => 'required|exists:roles,id',
             'permissions' => 'nullable|array|min:1',
             'permissions.*' => 'nullable|exists:permissions,id',
         ];

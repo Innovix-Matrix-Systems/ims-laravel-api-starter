@@ -18,34 +18,14 @@ class MakeRouteFileCommand extends Command
 
     /**
      * Create view directory if not exists.
-     *
-     * @param $path
      */
     public function createDir($path)
     {
         $dir = dirname($path);
 
-        if (!file_exists($dir)) {
+        if (! file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
-    }
-
-
-    /**
-     * getStubFilePath
-     *
-     * @return string
-     */
-    protected function getStubFilePath()
-    {
-        $stub = '/stubs/routes.stub';
-        return $stub;
-    }
-
-    protected function getStub()
-    {
-        return file_get_contents(__DIR__ . $this->getStubFilePath());
-
     }
 
     public function handle()
@@ -61,6 +41,7 @@ class MakeRouteFileCommand extends Command
 
         if (File::exists($path)) {
             $this->error("File {$path} already exists!");
+
             return 1;
         }
 
@@ -78,4 +59,21 @@ class MakeRouteFileCommand extends Command
         return 0;
     }
 
+    /**
+     * getStubFilePath
+     *
+     * @return string
+     */
+    protected function getStubFilePath()
+    {
+        $stub = '/stubs/routes.stub';
+
+        return $stub;
+    }
+
+    protected function getStub()
+    {
+        return file_get_contents(__DIR__ . $this->getStubFilePath());
+
+    }
 }

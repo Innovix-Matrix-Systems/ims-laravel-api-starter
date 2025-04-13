@@ -23,11 +23,9 @@ class AuthController extends Controller
     ) {
     }
 
-
     /**
      * log the user in after verifying the otp
      *
-     * @param  LoginRequest $request
      * @return JsonResponse
      */
     public function login(LoginRequest $request)
@@ -44,6 +42,7 @@ class AuthController extends Controller
             'user' => UserResource::make($authData['user']),
             'token' => $authData['token'],
         ];
+
         return $this->sendSuccessResponse(
             $data,
             __('messages.login.success'),
@@ -54,6 +53,7 @@ class AuthController extends Controller
     public function logout(LogoutRequest $request)
     {
         $this->authService->logout($request->device);
+
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

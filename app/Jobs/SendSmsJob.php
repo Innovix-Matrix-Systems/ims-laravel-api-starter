@@ -15,9 +15,8 @@ class SendSmsJob implements ShouldQueue
     public $autToken;
     public $to;
     public $body;
-    /**
-     * Create a new job instance.
-     */
+
+    /** Create a new job instance. */
     public function __construct($authToken, $to, $body)
     {
         $this->autToken = $authToken;
@@ -25,9 +24,7 @@ class SendSmsJob implements ShouldQueue
         $this->body = $body;
     }
 
-    /**
-     * Execute the job.
-     */
+    /** Execute the job. */
     public function handle(): void
     {
         //implement logic here

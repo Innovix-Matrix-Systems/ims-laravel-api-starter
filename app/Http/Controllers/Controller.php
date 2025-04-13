@@ -15,10 +15,9 @@ class Controller extends BaseController
     /**
      * return  response.
      *
-     * @param array | Collection | AnonymousResourceCollection | JsonResource $result
-     * @param string                                                          $message
-     * @param int                                                             $code
-     *
+     * @param  array | Collection | AnonymousResourceCollection | JsonResource $result
+     * @param  string                                                          $message
+     * @param  int                                                             $code
      * @return JsonResponse
      */
     public function sendSuccessResponse($result = [], $message = '', $code = Response::HTTP_OK)
@@ -31,16 +30,16 @@ class Controller extends BaseController
         if (empty($result)) {
             unset($response['data']);
         }
+
         return new JsonResponse($response, $code);
     }
 
     /**
      * return  response with collection.
      *
-     * @param Collection | AnonymousResourceCollection | JsonResource $collection
-     * @param string                                                  $message
-     * @param int                                                     $code
-     *
+     * @param  Collection | AnonymousResourceCollection | JsonResource $collection
+     * @param  string                                                  $message
+     * @param  int                                                     $code
      * @return JsonResponse
      */
     public function sendSuccessCollectionResponse($collection, $message, $code = Response::HTTP_OK)
@@ -57,10 +56,8 @@ class Controller extends BaseController
     /**
      * return error response.
      *
-     * @param       $error
-     * @param array $errorMessages
-     * @param int   $code
-     *
+     * @param  array        $errorMessages
+     * @param  int          $code
      * @return JsonResponse
      */
     public function sendErrorResponse($error, $errorMessages = [], $code = Response::HTTP_INTERNAL_SERVER_ERROR)
@@ -69,7 +66,7 @@ class Controller extends BaseController
             'success' => false,
             'message' => $error,
         ];
-        if (!empty($errorMessages)) {
+        if (! empty($errorMessages)) {
             $response['errors'] = $errorMessages;
         }
         if (empty($error)) {
@@ -82,11 +79,10 @@ class Controller extends BaseController
     /**
      * Apply search filters to a model.
      *
-     * @param string|null $searchText   The text to search for.
-     * @param Builder     $model        The model to search on.
-     * @param string[]    $searchFields The fields to search in.
-     *
-     * @return Builder The filtered model.
+     * @param  string|null $searchText   The text to search for.
+     * @param  Builder     $model        The model to search on.
+     * @param  string[]    $searchFields The fields to search in.
+     * @return Builder     The filtered model.
      */
     public function applySearchFilters(
         ?string $searchText,
@@ -124,6 +120,7 @@ class Controller extends BaseController
         if (empty($searchText)) {
             return $model;
         }
+
         return $model->whereHas($relation, function ($query) use ($searchText, $searchFields) {
             $query->where(function ($query) use ($searchText, $searchFields) {
                 foreach ($searchFields as $field) {
@@ -136,18 +133,18 @@ class Controller extends BaseController
     /**
      * Apply Select filters to a model.
      *
-     * @param Builder              $model        The model to search on.
-     * @param array<string, mixed> $selectFields The fields to search in.
-     *
-     * @return Builder The filtered model.
+     * @param  Builder              $model        The model to search on.
+     * @param  array<string, mixed> $selectFields The fields to search in.
+     * @return Builder              The filtered model.
      */
     public function applySelectFilters(
         Builder $model,
         array $selectFields
     ): Builder {
         $selectFields = array_filter($selectFields, function ($value) {
-            return !is_null($value) && $value !== '';
+            return ! is_null($value) && $value !== '';
         });
+
         return $model->where(function (Builder $query) use ($selectFields) {
             foreach ($selectFields as $field => $value) {
                 $query->where($field, '=', $value);
@@ -158,11 +155,10 @@ class Controller extends BaseController
     /**
      * Apply Select filters to a model relation.
      *
-     * @param string               $relation     The relation to filter within.
-     * @param Builder              $model        The model to search on.
-     * @param array<string, mixed> $selectFields The fields to search in.
-     *
-     * @return Builder The filtered model.
+     * @param  string               $relation     The relation to filter within.
+     * @param  Builder              $model        The model to search on.
+     * @param  array<string, mixed> $selectFields The fields to search in.
+     * @return Builder              The filtered model.
      */
     public function applyRelationSelectFilters(
         string $relation,
@@ -170,8 +166,9 @@ class Controller extends BaseController
         array $selectFields
     ): Builder {
         $selectFields = array_filter($selectFields, function ($value) {
-            return !is_null($value) && $value !== '';
+            return ! is_null($value) && $value !== '';
         });
+
         return $model->whereHas($relation, function (Builder $query) use ($selectFields) {
             $query->where(function ($query) use ($selectFields) {
                 foreach ($selectFields as $field => $value) {
@@ -197,13 +194,14 @@ class Controller extends BaseController
         array $selectFields,
         Builder $model,
     ): Builder {
-        if ($searchText && !empty($searchFields)) {
+        if ($searchText && ! empty($searchFields)) {
             $model = $this->applySearchFilters($searchText, $model, $searchFields);
         }
 
-        if (!empty($selectFields)) {
+        if (! empty($selectFields)) {
             $model = $this->applySelectFilters($model, $selectFields);
         }
+
         return $model;
     }
 }

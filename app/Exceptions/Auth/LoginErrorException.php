@@ -22,7 +22,6 @@ class LoginErrorException extends Exception
         $this->errorMessage = $errorMessage;
     }
 
-
     /**
      * Report or log an exception.
      *
@@ -43,11 +42,12 @@ class LoginErrorException extends Exception
     {
 
         $data = [
-            'success'      => false,
-            'errorCode'    => $this->errorCode,
-            'message'      => $this->errorMessage,
+            'success' => false,
+            'errorCode' => $this->errorCode,
+            'message' => $this->errorMessage,
 
         ];
+
         return new JsonResponse($data, $this->responseCode);
     }
 }

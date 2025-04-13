@@ -9,9 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$authService;
-$testUser;
-
 beforeEach(function () {
     $smsService = new SmsService();
     $otpService = new OtpService($smsService);

@@ -1,0 +1,90 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "array_syntax": {
+            "syntax": "short"
+        },
+        "no_unused_imports": true,
+        "unary_operator_spaces": true,
+        "ordered_imports": {
+            "imports_order": [
+                "class",
+                "function",
+                "const"
+            ],
+            "sort_algorithm": "alpha"
+        },
+        "phpdoc_align": true,
+        "ordered_class_elements": {
+            "order": [
+                "use_trait",
+                "case",
+                "constant_public",
+                "constant_protected",
+                "constant_private",
+                "property_public",
+                "property_protected",
+                "property_private",
+                "construct",
+                "destruct",
+                "magic",
+                "method_public_static",
+                "method_public",
+                "method_protected_static",
+                "method_protected",
+                "method_private_static",
+                "method_private"
+            ],
+            "sort_algorithm": "none"
+        },
+        "phpdoc_order": true,
+        "phpdoc_line_span": {
+            "property": "single",
+            "const": "single",
+            "method": "single"
+        },
+        "single_quote": true,
+        "blank_line_after_namespace": true,
+        "blank_line_after_opening_tag": true,
+        "method_chaining_indentation": true,
+        "class_attributes_separation": {
+            "elements": {
+                "method": "one"
+            }
+        },
+        "visibility_required": {
+            "elements": [
+                "method",
+                "property"
+            ]
+        },
+        "no_superfluous_elseif": true,
+        "no_useless_else": true,
+        "simplified_if_return": true,
+        "ternary_to_null_coalescing": true,
+        "trim_array_spaces": true,
+        "cast_spaces": {
+            "space": "single"
+        },
+        "concat_space": {
+            "spacing": "one"
+        },
+        "control_structure_braces": true,
+        "control_structure_continuation_position": true,
+        "elseif": true,
+        "yoda_style": false
+    },
+    "exclude": [
+        "bootstrap",
+        "storage",
+        "vendor",
+        "docker"
+    ],
+    "notName": [
+        "*.blade.php"
+    ],
+    "notPath": [
+        "_ide_helper.php",
+        "_ide_helper_models.php"
+    ]
+}

@@ -7,9 +7,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-$adminUser;
-$authToken;
-
 beforeEach(function () {
     $authData = generateAdminUserAndAuthToken();
     $this->adminUser = $authData['user'];
@@ -21,16 +18,16 @@ it('should returns a successful response after inserting a User', function () {
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
     ])->postJson('/api/v1/user', [
-                'name' => 'test name',
-                'email' => 'test@test.com',
-                'password' => '123456',
-                'password_confirmation' => '123456',
-                'phone' => '1234567890',
-                'designation' => 'manager',
-                'address' => 'test address',
-                'is_active' => UserStatus::ACTIVE->value,
-                'roles' => [UserRoleID::USER_ID->value],
-            ]);
+        'name' => 'test name',
+        'email' => 'test@test.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
+        'phone' => '1234567890',
+        'designation' => 'manager',
+        'address' => 'test address',
+        'is_active' => UserStatus::ACTIVE->value,
+        'roles' => [UserRoleID::USER_ID->value],
+    ]);
     $response->assertStatus(201);
     $data = $response->json();
 
@@ -44,7 +41,6 @@ it('should returns a successful response after inserting a User', function () {
     $this->assertTrue($data['data']['created_by'] === $this->adminUser->id);
     $this->assertTrue($data['data']['roles'][0] === UserRole::USER->value);
 
-
 });
 
 it('should returns a successful response after updating a User', function () {
@@ -53,15 +49,15 @@ it('should returns a successful response after updating a User', function () {
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
     ])->postJson('/api/v1/user', [
-                'name' => 'test name',
-                'email' => 'test@test.com',
-                'password' => '123456',
-                'password_confirmation' => '123456',
-                'phone' => '1234567890',
-                'designation' => 'manager',
-                'address' => 'test address',
-                'roles' => [UserRoleID::USER_ID->value],
-            ]);
+        'name' => 'test name',
+        'email' => 'test@test.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
+        'phone' => '1234567890',
+        'designation' => 'manager',
+        'address' => 'test address',
+        'roles' => [UserRoleID::USER_ID->value],
+    ]);
 
     $newUserData = $userCreateResponse->json();
     $userId = $newUserData['data']['id'];
@@ -70,14 +66,14 @@ it('should returns a successful response after updating a User', function () {
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
     ])->postJson('/api/v1/user/update', [
-                'id' => $userId,
-                'name' => 'test user update',
-                'email' => 'test@2211test.com',
-                'phone' => '1234567890',
-                'designation' => 'manager',
-                'address' => 'test address update',
-                'is_active' => UserStatus::DEACTIVE->value,
-            ]);
+        'id' => $userId,
+        'name' => 'test user update',
+        'email' => 'test@2211test.com',
+        'phone' => '1234567890',
+        'designation' => 'manager',
+        'address' => 'test address update',
+        'is_active' => UserStatus::DEACTIVE->value,
+    ]);
     $response->assertStatus(200);
     $data = $response->json();
     $this->assertTrue($data['data']['id'] === $userId);
@@ -96,15 +92,15 @@ it('should returns a error response when admin try to delete a user', function (
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
     ])->postJson('/api/v1/user', [
-                'name' => 'test name',
-                'email' => 'test@test.com',
-                'password' => '123456',
-                'password_confirmation' => '123456',
-                'phone' => '1234567890',
-                'designation' => 'manager',
-                'address' => 'test address',
-                'roles' => [UserRoleID::USER_ID->value],
-            ]);
+        'name' => 'test name',
+        'email' => 'test@test.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
+        'phone' => '1234567890',
+        'designation' => 'manager',
+        'address' => 'test address',
+        'roles' => [UserRoleID::USER_ID->value],
+    ]);
 
     $newUserData = $userCreateResponse->json();
     $userId = $newUserData['data']['id'];
@@ -122,15 +118,15 @@ it('should returns success after updating user password', function () {
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
     ])->postJson('/api/v1/user', [
-                'name' => 'test name',
-                'email' => 'test@test.com',
-                'password' => '123456',
-                'password_confirmation' => '123456',
-                'phone' => '1234567890',
-                'designation' => 'manager',
-                'address' => 'test address',
-                'roles' => [UserRoleID::USER_ID->value],
-            ]);
+        'name' => 'test name',
+        'email' => 'test@test.com',
+        'password' => '123456',
+        'password_confirmation' => '123456',
+        'phone' => '1234567890',
+        'designation' => 'manager',
+        'address' => 'test address',
+        'roles' => [UserRoleID::USER_ID->value],
+    ]);
 
     $newUserData = $userCreateResponse->json();
     $userId = $newUserData['data']['id'];
@@ -138,7 +134,7 @@ it('should returns success after updating user password', function () {
     $response = $this->withHeaders([
         'Accept' => 'application/json',
         'authorization' => "Bearer $this->authToken",
-    ])->postJson("/api/v1/user/change-password", [
+    ])->postJson('/api/v1/user/change-password', [
         'user_id' => $userId,
         'password' => '123456',
         'password_confirmation' => '123456',

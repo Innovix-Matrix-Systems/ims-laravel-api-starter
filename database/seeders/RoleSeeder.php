@@ -11,10 +11,9 @@ use Spatie\Permission\Models\Role;
 class RoleSeeder extends Seeder
 {
     use RolePermissionTrait;
-    private $guard = "sanctum";
-    /**
-     * Run the database seeds.
-     */
+    private $guard = 'sanctum';
+
+    /** Run the database seeds. */
     public function run(): void
     {
         // Reset cached roles and permissions
@@ -22,14 +21,14 @@ class RoleSeeder extends Seeder
 
         $superAdmin = Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => UserRole::SUPER_ADMIN
+            'name' => UserRole::SUPER_ADMIN,
         ]);
 
         $superAdmin->givePermissionTo(Permission::all());
 
-        $admin =Role::create([
+        $admin = Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => UserRole::ADMIN
+            'name' => UserRole::ADMIN,
         ]);
         $admin->givePermissionTo([
             'role.view.all',
@@ -38,7 +37,7 @@ class RoleSeeder extends Seeder
 
         Role::create([
             'guard_name' => config('constants.GUARD_NAME'),
-            'name' => UserRole::USER
+            'name' => UserRole::USER,
         ]);
     }
 }
