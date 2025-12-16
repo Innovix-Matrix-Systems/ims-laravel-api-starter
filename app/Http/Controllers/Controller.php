@@ -2,206 +2,88 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Builder;
+use App\Exceptions\ApiException;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\Response;
 
-class Controller extends BaseController
+abstract class Controller
 {
     /**
-     * return  response.
+     * Build a standardized JSON response for API data.
      *
-     * @param  array | Collection | AnonymousResourceCollection | JsonResource $result
-     * @param  string                                                          $message
-     * @param  int                                                             $code
-     * @return JsonResponse
+     * - For `JsonResource` or `AnonymousResourceCollection`, uses the resource's
+     *   serialized payload and merges optional `meta`.
+     * - For `Collection`, `Arrayable`, and arrays, wraps the payload under `data`
+     *   and appends optional `meta`.
+     *
+     * @param \Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\Support\Collection|\Illuminate\Contracts\Support\Arrayable|array|mixed $result
+     * @param int                                                                                                                                                                                         $code   HTTP status code
+     * @param array                                                                                                                                                                                       $meta   Additional metadata to merge into the response
      */
-    public function sendSuccessResponse($result = [], $message = '', $code = Response::HTTP_OK)
+    protected function respond($result = null, int $code = Response::HTTP_OK, array $meta = []): JsonResponse
     {
-        $response = [
-            'data' => $result,
-            'success' => true,
-            'message' => $message,
-        ];
-        if (empty($result)) {
-            unset($response['data']);
-        }
-
-        return new JsonResponse($response, $code);
-    }
-
-    /**
-     * return  response with collection.
-     *
-     * @param  Collection | AnonymousResourceCollection | JsonResource $collection
-     * @param  string                                                  $message
-     * @param  int                                                     $code
-     * @return JsonResponse
-     */
-    public function sendSuccessCollectionResponse($collection, $message, $code = Response::HTTP_OK)
-    {
-        $response = [
-            'data' => $collection,
-            'success' => true,
-            'message' => $message,
-        ];
-
-        return new JsonResponse($response, $code);
-    }
-
-    /**
-     * return error response.
-     *
-     * @param  array        $errorMessages
-     * @param  int          $code
-     * @return JsonResponse
-     */
-    public function sendErrorResponse($error, $errorMessages = [], $code = Response::HTTP_INTERNAL_SERVER_ERROR)
-    {
-        $response = [
-            'success' => false,
-            'message' => $error,
-        ];
-        if (! empty($errorMessages)) {
-            $response['errors'] = $errorMessages;
-        }
-        if (empty($error)) {
-            unset($response['message']);
-        }
-
-        return new JsonResponse($response, $code);
-    }
-
-    /**
-     * Apply search filters to a model.
-     *
-     * @param  string|null $searchText   The text to search for.
-     * @param  Builder     $model        The model to search on.
-     * @param  string[]    $searchFields The fields to search in.
-     * @return Builder     The filtered model.
-     */
-    public function applySearchFilters(
-        ?string $searchText,
-        Builder $model,
-        array $searchFields
-    ): Builder {
-        if (empty($searchText)) {
-            return $model;
-        }
-
-        return $model->where(function (Builder $query) use ($searchText, $searchFields) {
-            $query->where(function (Builder $query) use ($searchText, $searchFields) {
-                foreach ($searchFields as $field) {
-                    $query->orWhere($field, 'LIKE', "%{$searchText}%");
-                }
-            });
-        });
-    }
-
-    /**
-     * Apply Relation Search Filters to a model.
-     *
-     * @param  string   $relation     The relation to search within.
-     * @param  string   $searchText   The text to search for within the relation.
-     * @param  string[] $searchFields The fields to search in within the relation.
-     * @param  Builder  $model        The model to search on.
-     * @return Builder  The filtered model.
-     */
-    public function applyRelationSearchFilters(
-        string $relation,
-        string $searchText,
-        array $searchFields,
-        Builder $model
-    ): Builder {
-        if (empty($searchText)) {
-            return $model;
-        }
-
-        return $model->whereHas($relation, function ($query) use ($searchText, $searchFields) {
-            $query->where(function ($query) use ($searchText, $searchFields) {
-                foreach ($searchFields as $field) {
-                    $query->orWhere($field, 'LIKE', "%{$searchText}%");
-                }
-            });
-        });
-    }
-
-    /**
-     * Apply Select filters to a model.
-     *
-     * @param  Builder              $model        The model to search on.
-     * @param  array<string, mixed> $selectFields The fields to search in.
-     * @return Builder              The filtered model.
-     */
-    public function applySelectFilters(
-        Builder $model,
-        array $selectFields
-    ): Builder {
-        $selectFields = array_filter($selectFields, function ($value) {
-            return ! is_null($value) && $value !== '';
-        });
-
-        return $model->where(function (Builder $query) use ($selectFields) {
-            foreach ($selectFields as $field => $value) {
-                $query->where($field, '=', $value);
+        if ($result instanceof JsonResource || $result instanceof AnonymousResourceCollection) {
+            $payload = $result->response()->getData(true);
+            if (! empty($meta)) {
+                $payload['meta'] = array_merge($payload['meta'] ?? [], $meta);
             }
-        });
+
+            return new JsonResponse($payload, $code);
+        }
+
+        if ($result instanceof Collection) {
+            $data = $result->toArray();
+        } elseif ($result instanceof Arrayable) {
+            $data = $result->toArray();
+        } elseif (is_array($result)) {
+            $data = $result;
+        } else {
+            $data = $result;
+        }
+
+        $body = ['data' => $data];
+        if (! empty($meta)) {
+            $body['meta'] = $meta;
+        }
+
+        return new JsonResponse($body, $code);
     }
 
     /**
-     * Apply Select filters to a model relation.
+     * Throw an RFC 9457-compliant API error.
      *
-     * @param  string               $relation     The relation to filter within.
-     * @param  Builder              $model        The model to search on.
-     * @param  array<string, mixed> $selectFields The fields to search in.
-     * @return Builder              The filtered model.
+     * Builds and throws `ApiException`, which renders a standardized Problem
+     * Details response via the exception handler. This method does not return.
+     *
+     * @param string $errorCode  Application-specific error code (see `ApiErrorCode`)
+     * @param string $message    Human-readable error detail
+     * @param int    $code       HTTP status code
+     * @param array  $additional Extra context to merge into the error response
+     *
+     * @throws \App\Exceptions\ApiException
      */
-    public function applyRelationSelectFilters(
-        string $relation,
-        Builder $model,
-        array $selectFields
-    ): Builder {
-        $selectFields = array_filter($selectFields, function ($value) {
-            return ! is_null($value) && $value !== '';
-        });
-
-        return $model->whereHas($relation, function (Builder $query) use ($selectFields) {
-            $query->where(function ($query) use ($selectFields) {
-                foreach ($selectFields as $field => $value) {
-                    $query->orWhere($field, '=', $value);
-                }
-            });
-        });
+    protected function fail(string $errorCode, string $message, int $code = Response::HTTP_BAD_REQUEST, array $additional = []): JsonResponse
+    {
+        throw new ApiException(
+            responseCode: $code,
+            errorCode: $errorCode,
+            errorMessage: $message,
+            additionalData: $additional
+        );
     }
 
     /**
-     * Apply Filters to a model.
+     * Return a 204 No Content response.
      *
-     * @param  ?string              $searchText   The text to search for.
-     * @param  array<string>        $searchFields The fields to search in.
-     * @param  array<string, mixed> $selectFields The fields to select.
-     * @param  Builder              $model        The model to search on.
-     * @param  ?string              $relation     The model relationship to search on.
-     * @return Builder              The filtered model.
+     * Used when an operation is successful but there is no data to return
+     * (e.g., after deleting a resource).
      */
-    public function applyFilters(
-        ?string $searchText,
-        array $searchFields,
-        array $selectFields,
-        Builder $model,
-    ): Builder {
-        if ($searchText && ! empty($searchFields)) {
-            $model = $this->applySearchFilters($searchText, $model, $searchFields);
-        }
-
-        if (! empty($selectFields)) {
-            $model = $this->applySelectFilters($model, $selectFields);
-        }
-
-        return $model;
+    protected function successNoContent(): JsonResponse
+    {
+        return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

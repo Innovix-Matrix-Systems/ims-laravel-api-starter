@@ -17,7 +17,7 @@ class MakeDTOCommand extends Command
     public $argumentName = 'dto';
 
     /**
-     * Name and signiture of Command.
+     * Name and signature of Command.
      * name
      *
      * @var string
@@ -42,16 +42,14 @@ class MakeDTOCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * getClassNamespace
-     */
+    /** getClassNamespace */
     public function getDefaultNamespace(): string
     {
-        return 'App\\Http\\DTOs';
+        return 'App\\DTOs';
     }
 
     /**
-     * Return a vaid class name
+     * Return a valid class name
      * getClass
      *
      * @return string
@@ -62,7 +60,7 @@ class MakeDTOCommand extends Command
     }
 
     /**
-     * Generate class namespace dinamacally
+     * Generate class namespace dynamically
      * getClassNamespace
      *
      * @return string
@@ -82,9 +80,7 @@ class MakeDTOCommand extends Command
         return trim($namespace, '\\');
     }
 
-    /**
-     * Create view directory if not exists.
-     */
+    /** Create view directory if not exists. */
     public function createDir($path)
     {
         $dir = dirname($path);
@@ -121,7 +117,7 @@ class MakeDTOCommand extends Command
     }
 
     /**
-     * Get Command argumant EX : HasAuth
+     * Get Command argument EX : HasAuth
      * getArguments
      *
      * @return array
@@ -140,7 +136,7 @@ class MakeDTOCommand extends Command
      */
     protected function getDestinationFilePath()
     {
-        return app_path() . '/Http/DTOs' . '/' . $this->getDTOName() . '.php';
+        return app_path() . '/DTOs' . '/' . $this->getDTOName() . '.php';
     }
 
     /**

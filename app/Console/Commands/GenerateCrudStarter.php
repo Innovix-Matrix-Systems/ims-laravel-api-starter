@@ -40,7 +40,7 @@ class GenerateCrudStarter extends Command
             'service' => ['make:service', ['service' => "{$name}/{$name}Service"]],
             'dto' => ['make:dto', ['dto' => "{$name}DTO"]],
             'route' => ['make:route', ['name' => $name]],
-            'test' => ['make:test', ['name' => "{$name}FeatureTest"]],
+            'feature_test' => ['make:test', ['name' => "{$name}FeatureTest"]],
             'unit_test' => ['make:test', ['name' => "{$name}UnitTest", '--unit' => true]],
         ];
 

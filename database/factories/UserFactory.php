@@ -2,8 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +13,15 @@ use Illuminate\Support\Str;
 class UserFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = User::class;
+    /** The current password being used by the factory. */
+    protected static ?string $password;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -23,14 +30,15 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'user_name' => fake()->userName(),
+            'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make('123456'), // password
-            'remember_token' => Str::random(10),
-            'is_active' => UserStatus::ACTIVE,
-            'phone' => fake()->phoneNumber(),
             'phone_verified_at' => now(),
+            'password' => static::$password ??= Hash::make('123456'), // development friendly password
+            'remember_token' => Str::random(10),
         ];
     }
 
@@ -39,15 +47,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+            'phone_verified_at' => null,
         ]);
-    }
-
-    public function configure()
-    {
-        return $this->afterCreating(function (User $user) {
-            $roles = [UserRole::ADMIN, UserRole::USER];
-            $randomRole = $roles[array_rand($roles)];
-            $user->assignRole($randomRole);
-        });
     }
 }

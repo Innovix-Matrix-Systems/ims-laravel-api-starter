@@ -23,4 +23,19 @@ class LogoutRequest extends FormRequest
             'device' => 'required|string|max:100',
         ];
     }
+
+    /**
+     * Get the body parameters for API documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'device' => [
+                'description' => 'Device identifier to logout from',
+                'example' => 'mobile_app',
+            ],
+        ];
+    }
 }

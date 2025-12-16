@@ -24,4 +24,27 @@ class AdminUserPasswordUpdateRequest extends FormRequest
             'password' => 'required|min:6|confirmed',
         ];
     }
+
+    /**
+     * Get the body parameters for API documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'user_id' => [
+                'description' => 'ID of the user whose password to update',
+                'example' => 1,
+            ],
+            'password' => [
+                'description' => 'New password (minimum 6 characters)',
+                'example' => 'newpassword123',
+            ],
+            'password_confirmation' => [
+                'description' => 'Password confirmation',
+                'example' => 'newpassword123',
+            ],
+        ];
+    }
 }

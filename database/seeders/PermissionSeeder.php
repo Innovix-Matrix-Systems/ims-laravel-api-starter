@@ -2,22 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Traits\RolePermissionTrait;
+use App\Models\Permission;
+use App\Registry\PermissionRegistry;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
-    use RolePermissionTrait;
-
     /** Run the database seeds. */
     public function run(): void
     {
         $permissions = [
-            //role
-            ...$this->getRolePermissions(),
-            //user
-            ...$this->getUserPermissions(),
+            // role
+            ...PermissionRegistry::getRolePermissions(),
+            // user
+            ...PermissionRegistry::getUserPermissions(),
+
         ];
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         Permission::insert($permissions);

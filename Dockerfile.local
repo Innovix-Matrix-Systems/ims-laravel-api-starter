@@ -1,0 +1,116 @@
+# Dockerfile for Laravel Web Application (Development)
+FROM php:8.2-fpm-alpine
+
+# Install system dependencies and PHP extensions
+RUN apk add --no-cache \
+    build-base \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    curl \
+    git \
+    nodejs \
+    npm \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        bcmath \
+        gd \
+        pdo_mysql \
+        zip \
+        pcntl \
+        posix \
+        opcache \
+        exif \
+    && rm -rf /var/cache/apk/*
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Development OPcache configuration (less aggressive caching for development)
+RUN echo 'opcache.memory_consumption=128' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.interned_strings_buffer=8' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.max_accelerated_files=4000' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.revalidate_freq=0' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.validate_timestamps=1' >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo 'opcache.enable_cli=1' >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Development PHP configuration
+RUN echo 'memory_limit=512M' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'max_execution_time=300' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'max_input_vars=5000' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'post_max_size=64M' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'upload_max_filesize=64M' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'display_errors=On' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'display_startup_errors=On' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'log_errors=On' >> /usr/local/etc/php/conf.d/php.ini \
+    && echo 'error_reporting=E_ALL' >> /usr/local/etc/php/conf.d/php.ini
+
+# Install Xdebug for development
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del .build-deps
+
+# Xdebug configuration for development
+RUN echo 'xdebug.mode=debug,coverage' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo 'xdebug.start_with_request=yes' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo 'xdebug.client_port=9003' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo 'xdebug.log=/var/www/storage/logs/xdebug.log' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Set working directory
+WORKDIR /var/www
+
+# Set development environment variables
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Copy composer files
+COPY composer.json composer.lock ./
+
+# Copy package.json for Node.js dependencies (if exists)
+COPY package*.json ./
+
+# Copy application code first
+COPY . .
+
+# Install ALL dependencies including dev dependencies
+RUN composer install --optimize-autoloader
+
+# Install Node.js dependencies if package.json exists
+RUN if [ -f package.json ]; then npm install; fi
+
+# Create necessary directories and set permissions
+RUN mkdir -p /var/www/storage/logs \
+    && mkdir -p /var/www/storage/framework/cache \
+    && mkdir -p /var/www/storage/framework/sessions \
+    && mkdir -p /var/www/storage/framework/views \
+    && mkdir -p /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
+
+# Copy scripts and entrypoint
+COPY scripts/ /var/www/scripts/
+RUN chmod +x /var/www/scripts/*.sh
+
+# Copy entrypoint script from scripts folder
+COPY scripts/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/api/healthz || exit 1
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# Start Laravel's built-in server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

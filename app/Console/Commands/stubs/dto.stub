@@ -2,7 +2,19 @@
 
 namespace $CLASS_NAMESPACE$;
 
+use Illuminate\Http\Request;
+
 class $CLASS$
 {
+    /**
+     * __construct
+     *
+     * @return void
+    */
     public function __construct(){}
+
+    public static function fromRequest(Request $request, ?self $existing = null): self
+    {
+        return new self();
+    }
 }

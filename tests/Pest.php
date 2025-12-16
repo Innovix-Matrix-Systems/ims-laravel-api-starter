@@ -1,9 +1,5 @@
 <?php
 
-use App\Enums\UserRole;
-use App\Enums\UserRoleID;
-use App\Models\User;
-
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,18 +7,13 @@ use App\Models\User;
 |
 | The closure you provide to your test functions is always bound to a specific PHPUnit test
 | case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
+| need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
 
-uses(
-    Tests\TestCase::class,
-    // Illuminate\Foundation\Testing\RefreshDatabase::class,
-)->in('Feature');
-
-uses(
-    Tests\TestCase::class,
-)->in('Unit');
+pest()->extend(Tests\TestCase::class)
+ // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -53,70 +44,4 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
-}
-
-function generateUser()
-{
-    $user = User::factory()->create();
-    $user->assignRole(UserRole::USER);
-
-    return $user;
-}
-
-function generateSuperAdmin()
-{
-    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
-    $user = User::factory()->create();
-    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
-    $user->save();
-    $user->assignRole(UserRole::SUPER_ADMIN);
-
-    return $user;
-}
-
-function generateAdmin()
-{
-    $user = User::factory()->create();
-    $user->assignRole(UserRole::ADMIN);
-
-    return $user;
-}
-
-function generateUserAndAuthToken()
-{
-    $user = User::factory()->create();
-    $user->assignRole(UserRole::USER);
-    $token = $user->createToken('test')->plainTextToken;
-
-    return [
-        'user' => $user,
-        'token' => $token,
-    ];
-}
-
-function generateAdminUserAndAuthToken()
-{
-    $user = User::factory()->create();
-    $user->assignRole(UserRole::ADMIN);
-    $token = $user->createToken('test')->plainTextToken;
-
-    return [
-        'user' => $user,
-        'token' => $token,
-    ];
-}
-
-function generateSuperAdminUserAndAuthToken()
-{
-    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
-    $user = User::factory()->create();
-    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
-    $user->save();
-    $user->assignRole(UserRole::SUPER_ADMIN);
-    $token = $user->createToken('test')->plainTextToken;
-
-    return [
-        'user' => $user,
-        'token' => $token,
-    ];
 }

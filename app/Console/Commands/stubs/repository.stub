@@ -1,0 +1,18 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Illuminate\Support\Facades\DB;
+
+class $CLASS$
+{
+    /**
+     * __construct
+     *
+     * @return void
+    */
+    public function __construct()
+    {
+        //
+    }
+}

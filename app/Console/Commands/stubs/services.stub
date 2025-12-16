@@ -10,4 +10,14 @@ use Illuminate\Support\Str;
 class $CLASS$
 {
 
+    /**
+     * __construct
+     *
+     * @return void
+    */
+    public function __construct()
+    {
+        //
+    }
+
 }
