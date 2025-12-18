@@ -19,16 +19,11 @@ class RoleInsertUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $validations = [
-            'name' => 'required|string|max:20|unique:roles,name,' . $this->id . ',id',
+        return [
+            'name' => "required|string|max:20|unique:roles,name,{$this->id},id",
             'permissions' => 'nullable|array|min:1',
             'permissions.*' => 'nullable|exists:permissions,id',
         ];
-        if (! $this->id) {
-            array_shift($validations);
-        }
-
-        return $validations;
     }
 
     /**

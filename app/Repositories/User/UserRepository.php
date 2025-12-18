@@ -4,6 +4,7 @@ namespace App\Repositories\User;
 
 use App\DTOs\User\UserFilterDTO;
 use App\Enums\MediaCollection;
+use App\Enums\UserStatus;
 use App\Helpers\EloquentFilterHelper;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -34,6 +35,7 @@ class UserRepository implements UserRepositoryInterface
             $data['password'] = Hash::make($data['password']);
         }
 
+        $data['is_active'] ??= UserStatus::ACTIVE->value;
         $data['created_by'] = auth()->user()->id;
 
         return DB::transaction(function () use ($data, $roles) {

@@ -100,7 +100,7 @@ class UserController extends Controller
      *
      * @apiResource App\Http\Resources\User\UserResource
      *
-     * @apiResourceModel App\Models\User with=roles
+     * @apiResourceModel App\Models\User with=roles,media
      */
     public function show(string $id)
     {
@@ -208,7 +208,7 @@ class UserController extends Controller
      *
      * @apiResource App\Http\Resources\User\UserResource
      *
-     * @apiResourceModel App\Models\User with=roles
+     * @apiResourceModel App\Models\User with=roles,media
      */
     public function getProfileData(Request $request)
     {
@@ -266,7 +266,7 @@ class UserController extends Controller
      *
      * @apiResource App\Http\Resources\User\UserResource
      *
-     * @apiResourceModel App\Models\User
+     * @apiResourceModel App\Models\User with=media
      */
     public function updateProfileAvatar(UserProfileAvatarUpdateRequest $request)
     {

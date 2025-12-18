@@ -37,7 +37,7 @@ class RoleController extends Controller
      *
      * @apiResourceCollection App\Http\Resources\Role\RoleResource
      *
-     * @apiResourceModel App\Models\Role paginate=10
+     * @apiResourceModel App\Models\Role
      */
     public function index()
     {

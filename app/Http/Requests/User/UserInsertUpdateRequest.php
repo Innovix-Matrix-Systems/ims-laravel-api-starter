@@ -23,9 +23,10 @@ class UserInsertUpdateRequest extends FormRequest
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255' . ($this->id ? '|unique:users,email,' . $this->id . ',id,deleted_at,NULL' : '|unique:users,email,NULL,id,deleted_at,NULL'),
+            'email' => 'required|string|email|max:255' . ($this->id ? '|unique:users,email,' . $this->id . ',id' : '|unique:users,email,NULL,id'),
             'password' => ($this->id == null) ? 'required|string|min:6|confirmed' : '',
-            'phone' => 'nullable|numeric' . ($this->id ? '|unique:users,phone,' . $this->id . ',id,deleted_at,NULL' : '|unique:users,phone,NULL,id,deleted_at,NULL'),
+            'phone' => 'nullable|numeric' . ($this->id ? '|unique:users,phone,' . $this->id . ',id' : '|unique:users,phone,NULL,id'),
+            'is_active' => 'required|boolean',
             'roles' => ($this->id == null) ? 'required|array|min:1' : '',
             'roles.*' => ($this->id == null) ? 'required|exists:roles,id' : '',
         ];

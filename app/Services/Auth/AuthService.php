@@ -77,6 +77,7 @@ class AuthService
             'user' => $user,
             'token' => $token,
             'status' => self::AUTH_SUCCESS_CODE,
+            'message' => __('messages.login.success'),
         ];
     }
 
@@ -120,6 +121,7 @@ class AuthService
             'user' => $user,
             'token' => $token,
             'status' => self::AUTH_SUCCESS_CODE,
+            'message' => __('messages.login.success'),
         ];
     }
 

@@ -136,7 +136,7 @@ return [
         ],
 
         'otp' => [
-            'enabled' => false,
+            'enabled' => env('AUTH_OTP_ENABLED', false),
             'expiry_minutes' => 5,
             'length' => 6,
         ],

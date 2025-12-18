@@ -128,7 +128,7 @@ return [
         'placeholder' => 'Bearer {YOUR_AUTH_KEY}',
 
         // Any extra authentication-related info for your users. Markdown and HTML are supported.
-        'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
+        'extra_info' => 'You can retrieve your token by logging in with your credential.',
     ],
 
     // Example requests for each endpoint will be shown in each of these languages.
