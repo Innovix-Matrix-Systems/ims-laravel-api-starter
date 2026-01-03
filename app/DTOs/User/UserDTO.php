@@ -38,7 +38,7 @@ class UserDTO
 
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'id' => $this->id,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
@@ -48,6 +48,6 @@ class UserDTO
             'phone' => $this->phone,
             'is_active' => $this->isActive,
             'roles' => $this->roles,
-        ];
+        ], fn ($value) => ! is_null($value));
     }
 }

@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\UserRole;
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -44,4 +47,70 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function generateUser()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::USER);
+
+    return $user;
+}
+
+function generateSuperAdmin()
+{
+    DB::table('users')->where('id', '=', UserRole::SUPER_ADMIN->id())->delete();
+    $user = User::factory()->create();
+    $user->id = UserRole::SUPER_ADMIN->id();
+    $user->save();
+    $user->assignRole(UserRole::SUPER_ADMIN);
+
+    return $user;
+}
+
+function generateAdmin()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::ADMIN);
+
+    return $user;
+}
+
+function generateUserAndAuthToken()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::USER);
+    $token = $user->createToken('test')->plainTextToken;
+
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
+}
+
+function generateAdminUserAndAuthToken()
+{
+    $user = User::factory()->create();
+    $user->assignRole(UserRole::ADMIN);
+    $token = $user->createToken('test')->plainTextToken;
+
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
+}
+
+function generateSuperAdminUserAndAuthToken()
+{
+    DB::table('users')->where('id', '=', UserRole::SUPER_ADMIN->id())->delete();
+    $user = User::factory()->create();
+    $user->id = UserRole::SUPER_ADMIN->id();
+    $user->save();
+    $user->assignRole(UserRole::SUPER_ADMIN);
+    $token = $user->createToken('test')->plainTextToken;
+
+    return [
+        'user' => $user,
+        'token' => $token,
+    ];
 }

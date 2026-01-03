@@ -141,20 +141,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application XSECURE Mode
-    |--------------------------------------------------------------------------
-    |
-    | IMS has some extra platform independent security system. This will prevent
-    | anyone from accessing any data in the application even if they have Access Token.
-    | If disabled, The check will pass and Application is not Protected.
-    |
-    */
-
-    'xsecure_enabled' => (bool) env('XSECURITY_ENABLED', false),
-    'xsecure_secret' => env('XSECURITY_SECRET'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Rate Limiting Configuration
     |--------------------------------------------------------------------------
     |

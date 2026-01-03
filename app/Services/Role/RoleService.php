@@ -5,6 +5,7 @@ namespace App\Services\Role;
 use App\Enums\UserRole;
 use App\Exceptions\ApiException;
 use App\Models\Role;
+use App\Repositories\Contracts\RoleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,14 +14,15 @@ class RoleService
     /** Error code for unalterable role operations. */
     const UNALTERABLE_ROLE_DELETE_ERROR_CODE = 'UNALTERABLE_ROLE_DELETE_ERROR';
 
+    public function __construct(
+        protected RoleRepositoryInterface $roleRepository
+    ) {}
+
     public function insertRole(string $name, array $permissions = []): Role
     {
-        $role = new Role;
-        $role->name = $name;
-
         DB::beginTransaction();
         try {
-            $role->save();
+            $role = $this->roleRepository->create(['name' => $name]);
 
             if (! empty($permissions)) {
                 app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -39,8 +41,7 @@ class RoleService
     {
         $this->checkAndSendUnalterableRoleError($role->id);
 
-        $role->name = $name;
-        $role->save();
+        $role = $this->roleRepository->update($role, ['name' => $name]);
 
         return $role;
     }
@@ -57,7 +58,7 @@ class RoleService
                 $role->syncPermissions([]);
             }
             // delete role
-            $role->delete();
+            $this->roleRepository->delete($role);
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();

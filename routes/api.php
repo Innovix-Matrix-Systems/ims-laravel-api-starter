@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
 
+/**
+ * Endpoints for checking the health of the application.
+ */
 Route::get('/health', HealthCheckJsonResultsController::class);
 
 // Auth Routes
