@@ -30,13 +30,18 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
+          CACHE_DRIVER: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
         run: |
           mkdir -p database
           touch database/database.sqlite
-          php artisan cache:clear
           php artisan migrate --seed
       - name: Execute tests (Unit and Feature tests) via PEST
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
+          CACHE_DRIVER: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
         run: vendor/bin/pest
