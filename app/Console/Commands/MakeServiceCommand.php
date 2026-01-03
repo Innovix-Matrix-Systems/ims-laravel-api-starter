@@ -17,7 +17,7 @@ class MakeServiceCommand extends Command
     public $argumentName = 'service';
 
     /**
-     * Name and signiture of Command.
+     * Name and signature of Command.
      * name
      *
      * @var string
@@ -49,11 +49,11 @@ class MakeServiceCommand extends Command
      */
     public function getDefaultNamespace(): string
     {
-        return 'App\\Http\\Services';
+        return 'App\\Services';
     }
 
     /**
-     * Return a vaid class name
+     * Return a valid class name
      * getClass
      *
      * @return string
@@ -64,7 +64,7 @@ class MakeServiceCommand extends Command
     }
 
     /**
-     * Generate class namespace dinamacally
+     * Generate class namespace dynamically
      * getClassNamespace
      *
      * @return string
@@ -84,9 +84,7 @@ class MakeServiceCommand extends Command
         return trim($namespace, '\\');
     }
 
-    /**
-     * Create view directory if not exists.
-     */
+    /** Create view directory if not exists. */
     public function createDir($path)
     {
         $dir = dirname($path);
@@ -122,7 +120,7 @@ class MakeServiceCommand extends Command
     }
 
     /**
-     * Get command agrumants - EX : UserService
+     * Get command arguments - EX : UserService
      * getArguments
      *
      * @return array
@@ -142,7 +140,7 @@ class MakeServiceCommand extends Command
      */
     protected function getDestinationFilePath()
     {
-        return app_path() . '/Http/Services' . '/' . $this->getServiceName() . '.php';
+        return app_path() . '/Services' . '/' . $this->getServiceName() . '.php';
     }
 
     /**

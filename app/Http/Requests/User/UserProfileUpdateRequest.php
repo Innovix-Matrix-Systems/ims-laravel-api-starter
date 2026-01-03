@@ -19,14 +19,45 @@ class UserProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = auth()->user()?->id ?? 'NULL';
+
         return [
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->user()->id . ',id',
-            'phone' => 'nullable|numeric|unique:users,phone,' . auth()->user()->id . ',id',
-            'designation' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $userId . ',id',
+            'phone' => 'nullable|numeric|unique:users,phone,' . $userId . ',id',
+        ];
+    }
+
+    /**
+     * Get the body parameters for API documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'first_name' => [
+                'description' => 'User first name',
+                'example' => 'John',
+            ],
+            'last_name' => [
+                'description' => 'User last name',
+                'example' => 'Doe',
+            ],
+            'name' => [
+                'description' => 'User full name',
+                'example' => 'John Doe',
+            ],
+            'email' => [
+                'description' => 'User email address',
+                'example' => 'john.doe@example.com',
+            ],
+            'phone' => [
+                'description' => 'User phone number',
+                'example' => '1234567890',
+            ],
         ];
     }
 }

@@ -16,9 +16,7 @@ class MakeRouteFileCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * Create view directory if not exists.
-     */
+    /** Create view directory if not exists. */
     public function createDir($path)
     {
         $dir = dirname($path);
@@ -35,7 +33,7 @@ class MakeRouteFileCommand extends Command
         // $pluralName = Str::plural(Str::snake($name));
         $controller = "{$name}Controller";
         $controllerPath = "Api\V1\\{$name}\\{$name}Controller";
-        $path = base_path("routes/api/v1/{$name}/{$name}Routes.php");
+        $path = base_path("routes/api/v1/{$name}Routes.php");
 
         $this->createDir($path);
 

@@ -1,0 +1,19 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use App\Repositories\Contracts\$INTERFACE$;
+use Illuminate\Support\Facades\DB;
+
+class $CLASS$ implements $INTERFACE$
+{
+    /**
+     * __construct
+     *
+     * @return void
+    */
+    public function __construct()
+    {
+        //
+    }
+}

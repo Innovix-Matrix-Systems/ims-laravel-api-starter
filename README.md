@@ -1,152 +1,109 @@
-## About this project
+# IMS Laravel API Starter
 
-`ims-laravel-api-starter` is a streamlined backend API starter application built using the powerful [Laravel](https://laravel.com/) framework.
+A production-ready Laravel API starter kit with enterprise-grade features. Built-in authentication, RBAC, comprehensive API documentation, and advanced observability tools. Designed for rapid development with clean architecture patterns.
 
-Our primary focus is to provide you with a hassle-free and ready-to-use local development starter project. Unlike traditional API generators or code generators, this project aims to simplify the process of setting up your local development environment quickly and efficiently.
+<p align="center">
+  <img src="image1.png" alt="Observability Dashboard" width="100%" />
+  <br>
+  <em>Observability Dashboard</em>
+</p>
 
-With `ims-laravel-api-starter`, you can jumpstart your Laravel-based API development without unnecessary complexities, allowing you to focus on building your application logic rather than spending time on initial setup.
-
-Explore this project and experience the convenience of a ready-made local development environment for your Laravel-based APIs.
+<p align="center">
+  <img src="image2.png" alt="Scalar API Dashboard" width="100%" />
+  <br>
+  <em>Scalar API Documentation</em>
+</p>
 
 ## Features
 
--   **Authentication using Laravel Sanctum**: Implement secure authentication using [Laravel Sanctum](https://laravel.com/docs/11.x/sanctum).
+- 🔐 **Laravel Sanctum** - Secure API authentication with personal access tokens
+- 🔑 **RBAC System** - Role-based access control with permissions and roles
+- 📚 **API Documentation** - Scalar, Swagger UI, OpenAPI with Postman compatibility
+- 📊 **Observability** - Telescope, Pulse, Health with unified dashboard
+- 🛠️ **Clean Architecture** - Repository pattern, DTOs, service layer
+- 💾 **Data Management** - User management, data export, media library, backups
+- 🌍 **Internationalization** - Multi-language support (Bangla & English)
+- 🐳 **Docker Support** - Complete containerized development environment
+- ⚡ **Development Tools** - Code generators, IDE helpers, Git hooks
 
--   **Extra Security with XSECURE**: IMS introduces an additional layer of security, enhancing the API's reliability and resilience [XSECURE Mode](https://github.com/Innovix-Matrix-Systems/ims-laravel-api-starter/wiki/XSECURE-setup).
+## Quick Start
 
--   **Role & Permission-Based Authorization**: Utilize [Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) for a flexible authorization system based on roles and permissions.
+### Prerequisites
+- PHP 8.2+
+- MySQL 8.0+
+- Node.js 16+
+- Composer
 
--   **Multiple Language Support**: Provide a multilingual experience with [Laravel Lang](https://laravel-lang.com/) to make your application accessible to a diverse user base.
+### Development Setup
 
--   **Application and Database Backup System**: Provide an application and database backup system with [laravel-backup](https://spatie.be/docs/laravel-backup/v8/introduction) to make your application safe and ready for quick recovery.
-
-## Getting Started
-
-1. **Choose Your Local Development Tool:**
-
-   Select your preferred local development tool, such as [Laragon](https://github.com/leokhoa/laragon),[Laravel Herd](https://herd.laravel.com), XAMPP, WAMP, or any other tool that suits your needs.
-
-   ### Version Requirments ###
-   - Node 16+
-   - PHP version 8.2+
-   - MYSQL version 8.0+
-
-
-2. **Configure Your Environment:**
-
-   Update your `.env` file with the correct database credentials.
-
-   *Copy .env.example to .env:*
-
-   Before proceeding, copy the .env.example file to .env to set up your environment variables:
-
+1. **Clone and setup**
    ```bash
+   git clone git@github.com:Innovix-Matrix-Systems/ims-laravel-api-starter.git
+   cd ims-laravel-api-starter
    cp .env.example .env
    ```
 
-
-3. **Install Dependencies:**
-
-   To install local development packages, including Husky and other Laravel-specific packages, run the following commands:
-
-   ```bash
-   npm install #for husky and other Laravel packages
-   npx husky install #only once
-   ```
-
-   Run the following command to install the required dependencies using Composer:
-
+2. **Install dependencies**
    ```bash
    composer install
+   npm install
+   npx husky install
    ```
 
-4. **Migrate and Seed the Database:**
-    Initialize and seed the database with default data using:
-    ```bash 
-    php artisan migrate --seed
-    ```
+3. **Database setup**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-    Now, your project is ready for use. You can use the postman collection provided in the repo to start playing with the API. If you've run the seed command, log in with the provided credentials. Customize and expand your application as needed.
+4. **Start development**
+   ```bash
+   php artisan serve
+   ```
 
-## XSECURE MODE
-Please visit this [wiki page](https://github.com/Innovix-Matrix-Systems/ims-laravel-api-starter/wiki/XSECURE-setup) for XSECURE guide
+### Default Credentials
+- **Super Admin**: superadmin@ims.com / 123456
 
-## WIKI
-Please Visit the [WIKI](https://github.com/Innovix-Matrix-Systems/ims-laravel-api-starter/wiki) Page for XSECURE, Docker Guide, Extra Artisan commands and much more.
+## 📖 Documentation
 
-## Extra Artisan Commands
+### 🌐 [GitHub Wiki](https://github.com/Innovix-Matrix-Systems/ims-laravel-api-starter/wiki)
 
-### Generate IDE Helper Files:
+Comprehensive documentation covering:
+- **Features Overview** - Complete feature breakdown
+- **Quick Start Guide** - Step-by-step setup instructions
+- **API Documentation** - Interactive API docs and testing
+- **Observability Guide** - Monitoring and debugging tools
+- **Project Structure** - Directory organization and architecture
+- **Running Tests** - Testing guidelines and commands
+- **Backup System** - Application and database backup
+- **Docker Guide** - Container development setup
+- **Extra Information** - Additional development tools
 
-Generate general IDE helper files for improved code autocompletion and navigation by running:
+### API Documentation
 
-```bash
-php artisan ide-helper:generate
-```
+- **Scalar UI**: http://localhost:8000/docs
+- **Swagger UI**: http://localhost:8000/docs/swagger
+- **OpenAPI Spec**: http://localhost:8000/docs/openapi.yaml
 
-Generate IDE model helper files without writing to model files using:
+### Observability
 
-```bash
-#use any one of this two commands
-php artisan ide-helper:models -N
-php artisan ide-helper:models --nowrite
-```
+- **Dashboard**: http://localhost:8000/observability
+- **Health Check**: http://localhost:8000/health
 
-### Run PHP CS Fixer
+> **Note**: Observability tools require authentication
 
-```bash
-php artisan csfixer:run
-```
-
-This command ensures that your code adheres to the predefined coding standards, making your codebase clean and readable.
-
-### Create a Service
-
-Creating services for your application is made effortless. Use the following command to generate a service:
-
-```bash
-php artisan make:service subfolder/ServiceName
-```
-
-Replace subfolder and ServiceName with the actual values you need. You can also create a service without a subfolder:
+## Commands
 
 ```bash
-php artisan make:service TestService
+# Code generation
+php artisan make:crud Product
+php artisan make:dto ProductDTO
+php artisan make:service Product/ProductService
+
+# Code quality
+php artisan pint
+php artisan optimize:clear
 ```
-
-The newly created service will be located at `app/Http/Services/TestService.php`, ready to handle your application's business logic.
-
-### Create a DTO
-
-Creating DTO(Data Transfer Object) for your application is made effortless. Use the following command to generate a service:
-
-
-```bash
-php artisan make:dto UserDTO
-```
-
-The newly created DTO will be located at `app/Http/DTOs/UserDTO.php`, ready to Transfer your data across the application.
-
-
-### Create CRUD Starter
-
-Generate all the necessary boilerplate files for a specific entity (such as model, controller, routes, resource, request, service, etc.) using the following command:
-
-
-```bash
-php artisan make:crud Test
-```
-
-This command will create all the required boilerplate files for the `Test` entity.
-
-Leverage these Artisan commands to streamline your development process and maintain a well-structured codebase.
-
-## Authors
-
--   [@AHS12](https://www.github.com/AHS12)
 
 ## License
 
-This project is brought to you by Innovix Matrix System and is released as open-source software under the [MIT license](https://opensource.org/licenses/MIT).
-
-Feel free to use, modify, and distribute this starter project in accordance with the MIT license terms. We encourage collaboration and welcome contributions from the community to make this project even better.
+This project is licensed under the `MIT License` - see the [LICENSE.md](LICENSE.md) file for details.

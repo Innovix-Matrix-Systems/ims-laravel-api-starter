@@ -20,9 +20,32 @@ class AdminAssignUserRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'id' => 'required|exists:users,id',
             'roles' => 'required|array|min:1',
             'roles.*' => 'required|exists:roles,id',
+        ];
+    }
+
+    /**
+     * Get the body parameters for API documentation.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'user_id' => [
+                'description' => 'ID of the user to assign roles to',
+                'example' => 1,
+            ],
+            'roles' => [
+                'description' => 'Array of role IDs to assign to the user',
+                'example' => [1, 2],
+            ],
+            'roles.*' => [
+                'description' => 'Individual role ID',
+                'example' => 1,
+            ],
         ];
     }
 }

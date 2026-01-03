@@ -40,11 +40,8 @@ class UserPolicy
         if ($model->isSuperAdmin()) {
             return false;
         }
-        if ($user->isAdmin() && ! $model->isAdmin()) {
-            return true;
-        }
 
-        return $user->isSuperAdmin() || $user->isAdmin();
+        return $user->hasPermissionTo('user.role.assign');
     }
 
     /** Determine whether the user can delete the model. */

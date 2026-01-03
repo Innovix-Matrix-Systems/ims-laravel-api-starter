@@ -26,9 +26,9 @@ class LanguageMiddleware
             $locale = config('app.fallback_locale', config('app.locale')); // Fallback to default locale if unsupported
         }
 
-        app()->setLocale($locale);  // Set the app's locale
-        Carbon::setLocale($locale);  // Set Carbon's locale
+        app()->setLocale($locale);
+        Carbon::setLocale($locale);
 
-        return $next($request);  // Continue processing the request
+        return $next($request);
     }
 }

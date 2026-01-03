@@ -37,10 +37,11 @@ class GenerateCrudStarter extends Command
             'request' => ['make:request', ['name' => "{$name}/{$name}InsertUpdateRequest"]],
             'resource' => ['make:resource', ['name' => "{$name}/{$name}Resource"]],
             'policy' => ['make:policy', ['name' => "{$name}Policy", '--model' => $name]],
+            'repository' => ['make:repo', ['repository' => "{$name}/{$name}Repository"]],
             'service' => ['make:service', ['service' => "{$name}/{$name}Service"]],
-            'dto' => ['make:dto', ['dto' => "{$name}DTO"]],
+            'dto' => ['make:dto', ['dto' => "{$name}/{$name}DTO"]],
             'route' => ['make:route', ['name' => $name]],
-            'test' => ['make:test', ['name' => "{$name}FeatureTest"]],
+            'feature_test' => ['make:test', ['name' => "{$name}FeatureTest"]],
             'unit_test' => ['make:test', ['name' => "{$name}UnitTest", '--unit' => true]],
         ];
 

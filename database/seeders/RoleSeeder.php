@@ -3,16 +3,13 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
-use App\Traits\RolePermissionTrait;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Registry\PermissionRegistry;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    use RolePermissionTrait;
-    private $guard = 'sanctum';
-
     /** Run the database seeds. */
     public function run(): void
     {
@@ -20,23 +17,28 @@ class RoleSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $superAdmin = Role::create([
-            'guard_name' => config('constants.GUARD_NAME'),
+            'guard_name' => config('auth.defaults.guard'),
             'name' => UserRole::SUPER_ADMIN,
         ]);
 
         $superAdmin->givePermissionTo(Permission::all());
 
         $admin = Role::create([
-            'guard_name' => config('constants.GUARD_NAME'),
+            'guard_name' => config('auth.defaults.guard'),
             'name' => UserRole::ADMIN,
         ]);
         $admin->givePermissionTo([
-            'role.view.all',
-            ...array_column($this->getUserPermissions(['user.delete']), 'name'),
+            ...array_column(PermissionRegistry::getRolePermissions([
+                'role.update',
+                'role.delete',
+            ]), 'name'),
+            ...array_column(PermissionRegistry::getUserPermissions([
+                'user.delete',
+            ]), 'name'),
         ]);
 
         Role::create([
-            'guard_name' => config('constants.GUARD_NAME'),
+            'guard_name' => config('auth.defaults.guard'),
             'name' => UserRole::USER,
         ]);
     }

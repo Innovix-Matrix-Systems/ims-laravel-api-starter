@@ -27,16 +27,25 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
+     * Get the body parameters for API documentation.
      *
      * @return array
      */
-    public function messages()
+    public function bodyParameters()
     {
         return [
-            'phone.exists' => __('messages.phone.exists'),
-            'password.required' => __('messages.password.required'),
-            'password.size' => __('messages.password.size'),
+            'email' => [
+                'description' => 'User email address',
+                'example' => 'superadmin@ims.com',
+            ],
+            'password' => [
+                'description' => 'User password (minimum 6 characters)',
+                'example' => '123456',
+            ],
+            'device' => [
+                'description' => 'Device identifier for login tracking',
+                'example' => 'mobile_app',
+            ],
         ];
     }
 }

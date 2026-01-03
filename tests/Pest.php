@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Enums\UserRoleID;
 use App\Models\User;
 
 /*
@@ -11,18 +10,13 @@ use App\Models\User;
 |
 | The closure you provide to your test functions is always bound to a specific PHPUnit test
 | case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
+| need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
 
-uses(
-    Tests\TestCase::class,
-    // Illuminate\Foundation\Testing\RefreshDatabase::class,
-)->in('Feature');
-
-uses(
-    Tests\TestCase::class,
-)->in('Unit');
+pest()->extend(Tests\TestCase::class)
+ // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -65,9 +59,9 @@ function generateUser()
 
 function generateSuperAdmin()
 {
-    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
+    DB::table('users')->where('id', '=', UserRole::SUPER_ADMIN->id())->delete();
     $user = User::factory()->create();
-    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
+    $user->id = UserRole::SUPER_ADMIN->id();
     $user->save();
     $user->assignRole(UserRole::SUPER_ADMIN);
 
@@ -108,9 +102,9 @@ function generateAdminUserAndAuthToken()
 
 function generateSuperAdminUserAndAuthToken()
 {
-    DB::table('users')->where('id', '=', UserRoleID::SUPER_ADMIN_ID->value)->delete();
+    DB::table('users')->where('id', '=', UserRole::SUPER_ADMIN->id())->delete();
     $user = User::factory()->create();
-    $user->id = UserRoleID::SUPER_ADMIN_ID->value;
+    $user->id = UserRole::SUPER_ADMIN->id();
     $user->save();
     $user->assignRole(UserRole::SUPER_ADMIN);
     $token = $user->createToken('test')->plainTextToken;

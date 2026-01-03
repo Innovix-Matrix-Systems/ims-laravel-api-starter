@@ -1,32 +1,18 @@
 <?php
 
-use App\Http\Controllers\Health\HealthController;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+/**
+ * Endpoints for checking the health of the application.
+ */
+Route::get('/health', HealthCheckJsonResultsController::class);
 
-//App Health Route
-Route::get('/healthz', [HealthController::class, 'healthz']);
-Route::get('/http-test', function (Request $request) {
-    return response()->json([
-        'success' => true,
-    ], Response::HTTP_OK);
-})->name('http.test');
-
-// auth routes
-include 'api/v1/LoginRoutes.php';
-include 'api/v1/RolePermissionRoutes.php';
-
-//User routes
+// Auth Routes
+include 'api/v1/AuthRoutes.php';
+// Permission Routes
+include 'api/v1/PermissionRoutes.php';
+// Role Routes
+include 'api/v1/RoleRoutes.php';
+// User Routes
 include 'api/v1/UserRoutes.php';
