@@ -65,4 +65,16 @@ class UserPolicy
     {
         return $user->isSuperAdmin();
     }
+
+    /** Determine whether the user can export models. */
+    public function export(User $user): bool
+    {
+        return $user->hasPermissionTo('user.export');
+    }
+
+    /** Determine whether the user can import models. */
+    public function import(User $user): bool
+    {
+        return $user->hasPermissionTo('user.import');
+    }
 }

@@ -67,6 +67,11 @@ return [
                 'group' => 'user',
                 'description' => 'Can export all users',
             ],
+            [
+                'name' => 'user.import',
+                'group' => 'user',
+                'description' => 'Can import users',
+            ],
         ],
     ],
 ];

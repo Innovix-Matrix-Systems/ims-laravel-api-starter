@@ -30,7 +30,8 @@ test('insertRole creates role via repository', function () {
     DB::shouldReceive('beginTransaction')->once();
     DB::shouldReceive('commit')->once();
 
-    // We need to mock PermissionRegistrar too
+    // Mock PermissionRegistrar to prevent permission caching issues
+    /** @var \Mockery\MockInterface|\Spatie\Permission\PermissionRegistrar $registrar */
     $registrar = Mockery::mock(PermissionRegistrar::class);
     $registrar->shouldReceive('forgetCachedPermissions')->once();
     app()->instance(PermissionRegistrar::class, $registrar);

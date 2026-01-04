@@ -9,6 +9,7 @@ use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AdminAssignUserRoleRequest;
 use App\Http\Requests\User\AdminUserPasswordUpdateRequest;
+use App\Http\Requests\User\UserImportRequest;
 use App\Http\Requests\User\UserInsertUpdateRequest;
 use App\Http\Requests\User\UserPasswordUpdateRequest;
 use App\Http\Requests\User\UserProfileAvatarUpdateRequest;
@@ -29,6 +30,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UserController extends Controller
 {
+    const USER_DELETE_FAILED_ERROR_CODE = 'USER_DELETE_FAILED';
+
     /**
      * __construct
      *
@@ -151,7 +154,7 @@ class UserController extends Controller
         $isDeleted = $this->userService->deleteUser($user);
         if (! $isDeleted) {
             return $this->fail(
-                __('USER_DELETE_FAILED'),
+                self::USER_DELETE_FAILED_ERROR_CODE,
                 __('messages.user.delete.failed'),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -278,7 +281,7 @@ class UserController extends Controller
     }
 
     /**
-     * Export Users
+     * Export Users (Direct)
      *
      * Export user records with filtering options
      *
@@ -300,5 +303,121 @@ class UserController extends Controller
             new UserExport($filters),
             'user_data_' . date('Y-m-d_H-i-s') . '.xlsx'
         );
+    }
+
+    /**
+     * Export Users (Background)
+     *
+     * Queue background user export with filtering options
+     *
+     * @queryParam search string optional Search term for name, email, or phone. Example: john
+     * @queryParam is_active boolean optional Filter users by active status. Example: true
+     * @queryParam role_name string optional Filter by exact role name. Example: Admin
+     * @queryParam order_by string optional Field to order results by. Example: name. Default: created_at
+     * @queryParam order_direction string optional Direction to order results ('asc' or 'desc'). Example: desc. Default: asc
+     *
+     * @response 200 {
+     *   "data": {
+     *     "job_id": "550e8400-e29b-41d4-a716-446655440000",
+     *     "status": "pending",
+     *     "message": "Job queued successfully"
+     *   }
+     * }
+     */
+    public function exportUsersBackground(Request $request)
+    {
+        Gate::authorize('export', User::class);
+
+        $filters = UserFilterDTO::fromRequest($request);
+        $job = $this->userService->exportUsersBackground($filters, $request->user());
+        $data = [
+            'job_id' => $job->job_id,
+            'status' => $job->status,
+            'message' => __('messages.job.queue.success'),
+        ];
+
+        return $this->respond($data);
+    }
+
+    /**
+     * Import Users (Direct)
+     *
+     * Import users from uploaded Excel/CSV file
+     *
+     * @response 200 {
+     *   "data": {
+     *     "processed_rows": 100,
+     *     "success_count": 95,
+     *     "error_count": 5,
+     *     "errors": [
+     *       {
+     *         "row": 3,
+     *         "errors": [
+     *           "email": "Email is already registered",
+     *           "phone": "Phone number is already registered"
+     *         ]
+     *       }
+     *     ]
+     *   }
+     * }
+     */
+    public function importUsers(UserImportRequest $request)
+    {
+        Gate::authorize('import', User::class);
+
+        $result = $this->userService->importUsers($request->file('file'));
+
+        return $this->respond($result);
+    }
+
+    /**
+     * Import Users (Background)
+     *
+     * Upload file for background user import processing
+     *
+     * @bodyParam file file required The Excel/CSV file to import.
+     *
+     * @response 200 {
+     *   "data": {
+     *     "job_id": "550e8400-e29b-41d4-a716-446655440000",
+     *     "status": "pending",
+     *     "message": "Job queued successfully"
+     *   }
+     * }
+     *
+     * @scribe-ignore
+     */
+    public function importUsersBackground(UserImportRequest $request)
+    {
+        Gate::authorize('import', User::class);
+
+        $job = $this->userService->importUsersBackground($request->file('file'), $request->user());
+
+        $data = [
+            'job_id' => $job->job_id,
+            'status' => $job->status,
+            'message' => __('messages.job.queue.success'),
+        ];
+
+        return $this->respond($data);
+    }
+
+    /**
+     * Download Import Template
+     *
+     * Download a CSV template for user imports
+     *
+     * @response 200 file Binary CSV file (.csv)
+     */
+    public function downloadImportTemplate()
+    {
+        Gate::authorize('import', User::class);
+
+        $csvContent = $this->userService->generateImportTemplate();
+
+        return response($csvContent, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="user_import_template.csv"',
+        ]);
     }
 }

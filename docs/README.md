@@ -1,22 +1,27 @@
 # Documentation
 
-Welcome to the IMS Laravel API Starter documentation. This folder contains comprehensive guides for all features and functionality.
+Welcome to the IMS Laravel API Starter documentation. This page contains comprehensive guides for all features and functionality.
 
 ## 📚 Available Guides
 
-- **[Features](features.md)** - Complete overview of all built-in features
+### 🚀 Getting Started
 - **[Quick Start](quick-start.md)** - Get started in minutes
-- **[App Health Check](app-health-check.md)** - Monitor application health
-- **[Running Tests](running-tests.md)** - Testing guidelines and commands
+- **[Project Structure](project-tree.md)** - Directory organization and architecture
+
+### ⚡ Core Features
+- **[Features Overview](features.md)** - Complete overview of all built-in features
 - **[Backup System](backup-system.md)** - Application and database backup
-- **[Docker Guide](docker-guide.md)** - Container development setup
 - **[Extra Information](extra-information.md)** - Additional development tools
 
-## 🔗 Quick Links
+### 📊 Monitoring & Testing
+- **[Observability Guide](observability.md)** - Monitoring and logging
+- **[App Health Check](app-health-check.md)** - Monitor application health
+- **[Running Tests](running-tests.md)** - Testing guidelines and commands
 
-- [API Documentation](http://localhost:8000/docs) - Interactive API docs
-- [Observability Dashboard](http://localhost:8000/observability) - Monitoring tools
-- [Health Check](http://localhost:8000/health) - Application status
+### 🛠️ Development
+- **[API Documentation](api-documentation.md)** - API specs & UI
+- **[Docker Guide](docker-guide.md)** - Container development setup
+
 
 ## 🆘 Need Help?
 

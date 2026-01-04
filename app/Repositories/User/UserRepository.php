@@ -60,13 +60,10 @@ class UserRepository implements UserRepositoryInterface
         }
 
         $data['updated_by'] = auth()->user()->id;
+        $user->fill($data);
+        $user->save();
 
-        return DB::transaction(function () use ($user, $data) {
-            $user->fill($data);
-            $user->save();
-
-            return $user;
-        });
+        return $user;
     }
 
     public function updateProfile(User $user, array $data): User

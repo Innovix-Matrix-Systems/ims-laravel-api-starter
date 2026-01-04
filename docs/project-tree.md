@@ -217,7 +217,7 @@ resources/
 
 ```bash
 # Generate CRUD components
-php artisan make:crud Product
+php artisan make:crud Product // generate all necessary skeleton files
 
 # Generate DTO
 php artisan make:dto ProductDTO

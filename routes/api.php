@@ -16,3 +16,5 @@ include 'api/v1/PermissionRoutes.php';
 include 'api/v1/RoleRoutes.php';
 // User Routes
 include 'api/v1/UserRoutes.php';
+// Data Processing Job Routes
+include 'api/v1/DataProcessingJobRoutes.php';
