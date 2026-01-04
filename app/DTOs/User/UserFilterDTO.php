@@ -26,4 +26,16 @@ class UserFilterDTO
             perPage: $request->input('per_page', config('constant.DEFAULT_PAGINATION_ITEM_COUNT', 10)),
         );
     }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            search: $data['search'] ?? null,
+            isActive: $data['is_active'] ?? null,
+            roleName: $data['role_name'] ?? null,
+            orderBy: $data['order_by'] ?? 'created_at',
+            orderDirection: $data['order_direction'] ?? 'desc',
+            perPage: $data['per_page'] ?? config('constant.DEFAULT_PAGINATION_ITEM_COUNT', 10),
+        );
+    }
 }

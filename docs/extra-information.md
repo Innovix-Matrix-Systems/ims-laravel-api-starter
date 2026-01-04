@@ -4,7 +4,7 @@ Additional development tools and commands.
 
 ## 🛠️ Code Generators
 
-### CRUD Generator
+### CRUD Generator (skeleton)
 ```bash
 php artisan make:crud Product
 ```
@@ -40,14 +40,14 @@ php artisan make:service Product/ProductService
 ### Code Quality
 ```bash
 # Fix code style
-php artisan csfixer:run
+php artisan pint
 
 # Clear all caches
 php artisan optimize:clear
 
 # Generate IDE helpers
 php artisan ide-helper:generate
-php artisan ide-helper:models
+php artisan ide-helper:models -N
 php artisan ide-helper:meta
 ```
 
@@ -110,7 +110,7 @@ php artisan view:clear
 npx husky install
 
 # Add pre-commit hook
-npx husky add .husky/pre-commit "php artisan csfixer:run"
+npx husky add .husky/pre-commit "php artisan pint"
 ```
 
 ### Pre-commit Checks

@@ -36,6 +36,21 @@ class UserDTO
         );
     }
 
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['id'] ?? null,
+            $data['first_name'] ?? null,
+            $data['last_name'] ?? null,
+            $data['name'] ?? null,
+            $data['email'] ?? null,
+            $data['password'] ?? null,
+            $data['phone'] ?? null,
+            isset($data['is_active']) ? (bool) $data['is_active'] : null,
+            isset($data['roles']) && is_array($data['roles']) ? $data['roles'] : null,
+        );
+    }
+
     public function toArray(): array
     {
         return array_filter([

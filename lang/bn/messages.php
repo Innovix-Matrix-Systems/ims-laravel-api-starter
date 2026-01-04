@@ -25,4 +25,5 @@ return [
     'role.delete.unalterable.fail' => 'সিস্টেম রোল মুছে ফেলা সম্ভব নয়।',
     'user.delete.failed' => 'ইউজার মুছে ফেলা যায়নি।',
     'user.delete.unalterable.fail' => 'সিস্টেম ইউজার মুছে ফেলা সম্ভব নয়।',
+    'job.queue.success' => 'জব সফলভাবে কিউ করা হয়েছে।',
 ];

@@ -65,7 +65,7 @@ open http://localhost:8000/docs
 
 1. **API Documentation**: Visit `/docs` for interactive API docs
 2. **Observability**: Check `/observability` for monitoring tools
-3. **Code Generation**: Use `php artisan make:crud Product` to generate CRUD
+3. **Code Generation**: Use `php artisan make:crud Product` to generate CRUD skeleton files
 4. **Testing**: Run `php artisan test` to execute test suite
 
 ---

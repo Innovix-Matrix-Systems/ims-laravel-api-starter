@@ -25,4 +25,5 @@ return [
     'role.delete.unalterable.fail' => 'System role cannot be deleted.',
     'user.delete.failed' => 'Failed to delete the user.',
     'user.delete.unalterable.fail' => 'System user cannot be deleted.',
+    'job.queue.success' => 'Job queued successfully.',
 ];

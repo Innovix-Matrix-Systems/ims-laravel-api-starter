@@ -5,11 +5,16 @@ namespace Tests\Unit;
 use App\DTOs\User\UserDTO;
 use App\DTOs\User\UserFilterDTO;
 use App\Exceptions\ApiException;
+use App\Jobs\ProcessUserExport;
+use App\Jobs\ProcessUserImport;
+use App\Models\DataProcessingJob;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Services\DataProcessingJob\DataProcessingJobService;
 use App\Services\User\UserService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Tests\Mock\UserMockData;
 use Tests\TestCase;
@@ -18,7 +23,8 @@ uses(TestCase::class);
 
 beforeEach(function () {
     $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
-    $this->userService = new UserService($this->userRepository);
+    $this->dataProcessingJobService = Mockery::mock(DataProcessingJobService::class);
+    $this->userService = new UserService($this->userRepository, $this->dataProcessingJobService);
 });
 
 test('getAllUsers calls repository with filters', function () {
@@ -195,4 +201,61 @@ test('deleteUser deletes user via repository', function () {
     $result = $this->userService->deleteUser($user);
 
     expect($result)->toBeTrue();
+});
+
+test('generateImportTemplate returns CSV template content', function () {
+    $result = $this->userService->generateImportTemplate();
+
+    expect($result)->toBeString();
+    expect($result)->toContain('name,email,phone,password,status,roles');
+    expect($result)->toContain('John Doe');
+    expect($result)->toContain('Jane Smith');
+    expect($result)->toContain('Bob Johnson');
+});
+
+test('importUsersBackground creates data processing job and dispatches it', function () {
+    // Fake the queue to prevent actual job execution
+    Queue::fake();
+
+    $file = Mockery::mock(\Illuminate\Http\UploadedFile::class);
+    $user = Mockery::mock(User::class);
+    $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+    $file->shouldReceive('getClientOriginalExtension')->andReturn('csv');
+    $file->shouldReceive('getClientOriginalName')->andReturn('users.csv');
+    $file->shouldReceive('storeAs')
+        ->with('imports', Mockery::type('string'), 'public')
+        ->andReturn('imports/test-uuid.csv');
+
+    $dataProcessingJob = Mockery::mock(DataProcessingJob::class);
+    $dataProcessingJob->shouldReceive('getKey')->andReturn(1);
+
+    $this->dataProcessingJobService->shouldReceive('createJob')
+        ->once()
+        ->andReturn($dataProcessingJob);
+
+    $result = $this->userService->importUsersBackground($file, $user);
+    expect($result)->toBe($dataProcessingJob);
+    // Assert the background job was dispatched (but not executed)
+    Queue::assertPushed(ProcessUserImport::class);
+});
+
+test('exportUsersBackground creates data processing job and dispatches it', function () {
+    // Fake the queue to prevent actual job execution
+    Queue::fake();
+
+    $user = Mockery::mock(User::class);
+    $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+    $filters = new UserFilterDTO;
+    $dataProcessingJob = Mockery::mock(DataProcessingJob::class);
+    $dataProcessingJob->shouldReceive('getKey')->andReturn(1);
+
+    $this->dataProcessingJobService->shouldReceive('createJob')
+        ->once()
+        ->andReturn($dataProcessingJob);
+
+    $result = $this->userService->exportUsersBackground($filters, $user);
+    expect($result)->toBe($dataProcessingJob);
+    // Assert the background job was dispatched (but not executed)
+    Queue::assertPushed(ProcessUserExport::class);
 });

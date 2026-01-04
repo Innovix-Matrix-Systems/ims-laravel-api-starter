@@ -207,3 +207,118 @@ test('can export user data', function () {
     // Assert content type or download headers
     expect($response->headers->get('content-type'))->toBe('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 });
+
+test('can import users from file', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    // Create a proper CSV file content with valid data
+    $csvContent = "name,email,phone,password,status,roles\n";
+    $csvContent .= "John Doe,john.unique@example.com,1234567890,password123,active,3\n";
+    $csvContent .= 'Jane Smith,jane.unique@example.com,0987654321,password456,inactive,3';
+
+    // Create a fake CSV file with proper content
+    $file = Illuminate\Http\UploadedFile::fake()->createWithContent('users.csv', $csvContent);
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/import', [
+        'file' => $file,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data' => [
+                'processed_rows',
+                'success_count',
+                'error_count',
+                'errors',
+            ],
+        ]);
+});
+
+test('can import users in background', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    // Create a proper CSV file content with valid data
+    $csvContent = "name,email,phone,password,status,roles\n";
+    $csvContent .= "John Doe,john.unique2@example.com,1234567890,password123,active,3\n";
+    $csvContent .= 'Jane Smith,jane.unique2@example.com,0987654321,password456,inactive,3';
+    $file = Illuminate\Http\UploadedFile::fake()->createWithContent('users.csv', $csvContent);
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/import-background', [
+        'file' => $file,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data' => [
+                'job_id',
+                'status',
+                'message',
+            ],
+        ]);
+});
+
+test('can export users in background', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/export-background');
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data' => [
+                'job_id',
+                'status',
+                'message',
+            ],
+        ]);
+});
+
+test('can download import template', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/import-template');
+
+    $response->assertStatus(200);
+    expect($response->headers->get('content-type'))->toBe('text/csv; charset=utf-8');
+    expect($response->headers->get('content-disposition'))->toContain('attachment');
+    expect($response->getContent())->toContain('name,email,phone,password,status,roles');
+});
+
+test('import requires valid file', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/import');
+
+    $response->assertStatus(422);
+});
+
+test('import background requires valid file', function () {
+    $authData = generateSuperAdminUserAndAuthToken();
+    $superAdminToken = $authData['token'];
+
+    $response = $this->withHeaders([
+        'Authorization' => "Bearer $superAdminToken",
+        'Accept' => 'application/json',
+    ])->postJson('/api/v1/user/import-background');
+
+    $response->assertStatus(422);
+});
