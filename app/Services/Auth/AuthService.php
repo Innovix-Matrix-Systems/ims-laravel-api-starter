@@ -234,22 +234,23 @@ class AuthService
             self::AUTH_ERROR_INCORRECT_PASSWORD => __('messages.login.invalid.password'),
             self::AUTH_ERROR_INCORRECT_OTP => __('messages.login.invalid.otp'),
             self::AUTH_ERROR_OTP_EXPIRED => __('messages.login.expired.otp'),
+            self::AUTH_ERROR_LOCKOUT => __('messages.login.lockout'),
             default => __('messages.login.fail.general'),
         };
 
-        // Map internal error codes to ApiErrorCode if applicable, or keep specific string
-        $apiErrorCode = match ($errorCode) {
-            self::AUTH_ERROR_INCORRECT_PASSWORD => ApiErrorCode::INVALID_CREDENTIALS->value,
-            default => $errorCode,
+        $responseCode = match ($errorCode) {
+            self::AUTH_ERROR_INCORRECT_PASSWORD => Response::HTTP_BAD_REQUEST,
+            self::AUTH_ERROR_UNVERIFIED => Response::HTTP_FORBIDDEN,
+            self::AUTH_ERROR_INACTIVE => Response::HTTP_FORBIDDEN,
+            self::AUTH_ERROR_LOCKOUT => Response::HTTP_LOCKED,
+            self::AUTH_ERROR_OTP_EXPIRED => Response::HTTP_BAD_REQUEST,
+            self::AUTH_ERROR_INCORRECT_OTP => Response::HTTP_BAD_REQUEST,
+            default => Response::HTTP_BAD_REQUEST,
         };
-
-        if ($errorCode === self::AUTH_ERROR_INCORRECT_PASSWORD) {
-            $responseCode = Response::HTTP_UNAUTHORIZED;
-        }
 
         throw new ApiException(
             $responseCode,
-            $apiErrorCode,
+            $errorCode,
             $errorMessage,
             __('messages.login.fail.general')
         );
