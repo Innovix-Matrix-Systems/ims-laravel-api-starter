@@ -28,6 +28,6 @@ echo Optimizing the app ...
 php artisan optimize
 
 
-# Optionally, you can trigger any other post-deployment tasks here
+# Optionally, trigger any other post-deployment tasks here
 
 echo "Deployment script has run successfully"
